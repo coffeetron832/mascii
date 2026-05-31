@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "postinstall": "node postinstall.js"
+    "install": "node postinstall.js"
   },
   "repository": {
     "type": "git",
