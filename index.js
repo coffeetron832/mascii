@@ -159,7 +159,7 @@ ${String(error?.message || error)}
   // tras este cambio, el problema es que el visualizador y mpv saturan el
   // hardware de audio simultáneamente.
   // =========================================================================
-  // visualizer.start();
+  visualizer.start();
 
   // Renderizamos la interfaz gráfica inicial
   ui.render();
