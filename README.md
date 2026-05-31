@@ -32,3 +32,8 @@ Is your music player cluttering your desktop with heavy interfaces and unnecessa
 * **Ultra-Lightweight:** Built to run on minimal resources, leaving your CPU free to handle your real work.
 
 ---
+
+## Installation & Setup
+
+
+

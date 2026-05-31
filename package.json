@@ -14,9 +14,7 @@
     "blessed": "^0.1.81",
     "chalk": "^5.3.0",
     "colorette": "^2.0.20",
-    "fft-js": "^0.0.12",
     "music-metadata": "^10.9.1",
-    "play-sound": "^1.1.6",
     "sharp": "^0.34.5"
   }
 }
