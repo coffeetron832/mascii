@@ -8,7 +8,8 @@
     "mascii": "./index.js"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "postinstall": "node postinstall.js"
   },
   "dependencies": {
     "blessed": "^0.1.81",

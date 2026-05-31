@@ -1,0 +1,7 @@
+node_modules
+*.tgz
+.git
+.gitignore
+music
+*.sock
+127.0.0.1:*
