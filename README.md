@@ -11,12 +11,14 @@
                               ░                
 ```
 
-#  MASCII - Your Terminal, Your Music, Your Vibe.
+# MASCII - Your Terminal, Your Music, Your Vibe.
 
-![Version](https://img.shields.io/badge/version-1.0.2-blue)
+![Version](https://img.shields.io/badge/version-1.0.2--Kingston-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0-brightgreen)
+
+> **Current Release:** v1.0.2 *"Kingston"* 🇯🇲
 
 Is your music player cluttering your desktop with heavy interfaces and unnecessary distractions? Do you miss the days when computing was fast, focused, and purely text-driven?
 
