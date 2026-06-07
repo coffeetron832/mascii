@@ -13,14 +13,13 @@ const DEFAULT_DURATION = 180;
 const DEFAULT_VOLUME = 80;
 const YTDLP_PATH = process.env.YTDLP_PATH || "/usr/local/bin/yt-dlp";
 
+// Arte por defecto global actualizado con la vaca alineada comiendo pasto
 const DEFAULT_ART = [
-  "      .:::::.",
-  "    .:::::::::.",
-  "    :::::::::::::",
-  "    ░░░░░░░░░░░░░",
-  " ─────────────────",
-  "  ───────────────",
-  "   ─────────────"
+  "    \\|/          (__)  ",
+  "        `\\------(oo) ",
+  "          ||    (__)  ",
+  "          ||w--||     \\|/",
+  "       \\|/             "
 ].join("\n");
 
 export function createPlayer({ playlist: initialPlaylist = [], ui }) {
@@ -55,6 +54,11 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
   const artCache = new Map();
 
   let renderPending = false;
+
+  // Persistencia de metadatos de la pista en reproducción para redibujado dinámico
+  let currentImageBuffer = null;
+  let currentAlbumName = "Art Not Available";
+  let currentAlbumYear = "2026";
 
   function safeCall(fn, ...args) {
     try {
@@ -190,6 +194,7 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
   function cleanup() {
     playing = false;
     isPaused = false;
+    currentImageBuffer = null; 
 
     if (ipcClient) {
       try {
@@ -281,7 +286,7 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
         try {
           socket.destroy();
         } catch {}
-        return;
+          return;
       }
 
       ipcClient = socket;
@@ -479,70 +484,75 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
     return Buffer.isBuffer(imageBuffer) ? imageBuffer : Buffer.from(imageBuffer);
   }
 
-  async function imageBufferToAscii(imageBuffer, key) {
+  async function imageBufferToAscii(imageBuffer, baseKey, targetBoxSize) {
     const normalized = await normalizeImageBuffer(imageBuffer);
     if (!normalized) return null;
-    if (artCache.has(key)) return artCache.get(key);
+    
+    const boxSize = targetBoxSize || safeCall(ui?.getAlbumBoxSize) || { width: 22, height: 11 };
+    const uniqueCacheKey = `${baseKey}_w${boxSize.width}_h${boxSize.height}`;
+    
+    if (artCache.has(uniqueCacheKey)) {
+      return artCache.get(uniqueCacheKey);
+    }
 
-    const uiSize = safeCall(ui?.getSize) || { width: 80, height: 24 };
-    const cols = Math.max(Math.floor(uiSize.width * 0.24), 22);
-    const rows = Math.max(Math.floor(uiSize.height - 18), 11);
-
-    const targetWidth = cols * 2;
-    const targetHeight = rows * 4;
+    const targetWidth = boxSize.width * 2;
+    const targetHeight = boxSize.height * 4;
 
     const { data, info } = await sharp(normalized)
-      .resize(targetWidth, targetHeight, { fit: "fill" })
+      .resize(targetWidth, targetHeight, { fit: "contain" }) 
       .removeAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
 
     const ascii = buildBrailleAsciiFromRaw(data, info.width, info.height);
-    artCache.set(key, ascii);
+    artCache.set(uniqueCacheKey, ascii);
     return ascii;
   }
 
   async function updateAlbumArtMetadata(track, myTrackId) {
     const defaultArt = [
-      "      .:::::.",
-      "    .:::::::::.",
-      "    :::::::::::::",
-      "    ░░░░░░░░░░░░░",
-      " ─────────────────",
-      "  ───────────────",
-      "    ─────────────"
+      "    \\|/          (__)  ",
+      "        `\\------(oo) ",
+      "          ||    (__)  ",
+      "          ||w--||     \\|/",
+      "       \\|/             "
     ].join("\n");
 
     if (!track?.path) {
       if (myTrackId === currentTrackId) {
+        currentImageBuffer = null;
         safeCall(ui?.setFileInfo, "Unknown", "Unknown");
-        safeCall(ui?.setAlbumArt, defaultArt, "Retro Terminal Hits", "2026");
+        safeCall(ui?.setAlbumArt, defaultArt, "Art Not Available", "2026");
         scheduleRender();
       }
       return;
     }
 
+    const currentBoxSize = safeCall(ui?.getAlbumBoxSize) || { width: 22, height: 11 };
     const isRemote = /^https?:\/\//i.test(track.path);
     const isYoutube = track.source === "youtube" || /youtube\.com|youtu\.be/i.test(track.webpage_url || track.path || "");
 
     if (isYoutube || isRemote) {
       if (myTrackId !== currentTrackId) return;
 
-      const title = track.name || "YouTube Stream";
-      const year = "2026";
+      currentAlbumName = track.name || "YouTube Stream";
+      currentAlbumYear = "2026";
 
       safeCall(ui?.setFileInfo, isYoutube ? "YouTube" : "WEB Stream", "Stream");
 
       const thumbUrl = track.thumbnail || null;
       if (!thumbUrl) {
-        safeCall(ui?.setAlbumArt, defaultArt, title, year);
+        currentImageBuffer = null;
+        safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
         scheduleRender();
         return;
       }
 
-      const cacheKey = thumbUrl;
-      if (artCache.has(cacheKey)) {
-        safeCall(ui?.setAlbumArt, artCache.get(cacheKey), title, year);
+      const baseKey = thumbUrl;
+      const uniqueCacheKey = `${baseKey}_w${currentBoxSize.width}_h${currentBoxSize.height}`;
+      
+      if (artCache.has(uniqueCacheKey)) {
+        safeCall(ui?.setAlbumArt, artCache.get(uniqueCacheKey), currentAlbumName, currentAlbumYear);
         scheduleRender();
         return;
       }
@@ -552,20 +562,23 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
         if (myTrackId !== currentTrackId) return;
 
         if (thumbBuffer) {
-          const ascii = await imageBufferToAscii(thumbBuffer, cacheKey);
+          currentImageBuffer = thumbBuffer;
+          const ascii = await imageBufferToAscii(thumbBuffer, baseKey, currentBoxSize);
           if (myTrackId !== currentTrackId) return;
 
           if (ascii) {
-            safeCall(ui?.setAlbumArt, ascii, title, year);
+            safeCall(ui?.setAlbumArt, ascii, currentAlbumName, currentAlbumYear);
           } else {
-            safeCall(ui?.setAlbumArt, defaultArt, title, year);
+            safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
           }
         } else {
-          safeCall(ui?.setAlbumArt, defaultArt, title, year);
+          currentImageBuffer = null;
+          safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
         }
       } catch {
         if (myTrackId === currentTrackId) {
-          safeCall(ui?.setAlbumArt, defaultArt, title, year);
+          currentImageBuffer = null;
+          safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
         }
       }
 
@@ -573,16 +586,16 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
       return;
     }
 
-    let albumName = "Retro Terminal Hits";
-    let year = "2026";
+    currentAlbumName = "Art Not Available";
+    currentAlbumYear = "2026";
 
     try {
       const metadata = await getMetadata(track.path);
 
       if (myTrackId !== currentTrackId) return;
 
-      if (metadata?.common?.album) albumName = metadata.common.album;
-      if (metadata?.common?.year) year = String(metadata.common.year);
+      if (metadata?.common?.album) currentAlbumName = metadata.common.album;
+      if (metadata?.common?.year) currentAlbumYear = String(metadata.common.year);
       if (metadata?.common?.artist) track.artist = metadata.common.artist;
 
       if (metadata?.format?.duration && Number.isFinite(metadata.format.duration)) {
@@ -599,28 +612,33 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
       const picture = metadata?.common?.picture?.[0];
 
       if (picture?.data) {
-        const cacheKey = track.path;
-        if (artCache.has(cacheKey)) {
-          safeCall(ui?.setAlbumArt, artCache.get(cacheKey), albumName, year);
+        currentImageBuffer = picture.data;
+        const baseKey = track.path;
+        const uniqueCacheKey = `${baseKey}_w${currentBoxSize.width}_h${currentBoxSize.height}`;
+        
+        if (artCache.has(uniqueCacheKey)) {
+          safeCall(ui?.setAlbumArt, artCache.get(uniqueCacheKey), currentAlbumName, currentAlbumYear);
           scheduleRender();
           return;
         }
 
-        const ascii = await imageBufferToAscii(picture.data, cacheKey);
+        const ascii = await imageBufferToAscii(picture.data, baseKey, currentBoxSize);
         if (myTrackId !== currentTrackId) return;
 
         if (ascii) {
-          safeCall(ui?.setAlbumArt, ascii, albumName, year);
+          safeCall(ui?.setAlbumArt, ascii, currentAlbumName, currentAlbumYear);
         } else {
-          safeCall(ui?.setAlbumArt, defaultArt, albumName, year);
+          safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
         }
       } else {
-        safeCall(ui?.setAlbumArt, defaultArt, albumName, year);
+        currentImageBuffer = null;
+        safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
       }
     } catch {
       if (myTrackId === currentTrackId) {
+        currentImageBuffer = null;
         safeCall(ui?.setFileInfo, "Unknown", "Unknown");
-        safeCall(ui?.setAlbumArt, defaultArt, albumName, year);
+        safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
       }
     }
 
@@ -662,7 +680,7 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
 
     if (!track) {
       safeCall(ui?.appendLog, "{red-fg}No music found.{/red-fg} Add files or URLs.");
-      safeCall(ui?.setAlbumArt, DEFAULT_ART, "Retro Terminal Hits", "2026");
+      safeCall(ui?.setAlbumArt, DEFAULT_ART, "Art Not Available", "2026");
       scheduleRender();
       return;
     }
@@ -854,6 +872,20 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
 
   syncOriginalPlaylist();
   safeCall(loadTracks);
+
+  safeCall(ui?.onResize, async () => {
+    if (currentImageBuffer && playing) {
+      const currentBoxSize = safeCall(ui?.getAlbumBoxSize) || { width: 22, height: 11 };
+      const baseKey = getTrack()?.path || "resize";
+      
+      const resizedAscii = await imageBufferToAscii(currentImageBuffer, baseKey, currentBoxSize);
+      if (resizedAscii) {
+        safeCall(ui?.setAlbumArt, resizedAscii, currentAlbumName, currentAlbumYear);
+      }
+    } else if (!currentImageBuffer && playing) {
+      safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
+    }
+  });
 
   return {
     play,

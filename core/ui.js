@@ -130,19 +130,10 @@ function buildSplashArt() {
     "                              ░"
   ];
 
-  // Franjas Kingston/Jamaica más marcadas:
-  // alternamos verde/amarillo como fondo real para que la bandera se note más.
   const stripeTags = [
-    "{green-bg}{black-fg}",
-    "{yellow-bg}{black-fg}",
-    "{green-bg}{black-fg}",
-    "{yellow-bg}{black-fg}",
-    "{green-bg}{black-fg}",
-    "{yellow-bg}{black-fg}",
-    "{green-bg}{black-fg}",
-    "{yellow-bg}{black-fg}",
-    "{green-bg}{black-fg}",
-    "{yellow-bg}{black-fg}"
+    "{green-bg}{black-fg}", "{yellow-bg}{black-fg}", "{green-bg}{black-fg}", "{yellow-bg}{black-fg}",
+    "{green-bg}{black-fg}", "{yellow-bg}{black-fg}", "{green-bg}{black-fg}", "{yellow-bg}{black-fg}",
+    "{green-bg}{black-fg}", "{yellow-bg}{black-fg}"
   ];
 
   const width = Math.max(...logoLines.map((line) => line.length));
@@ -153,11 +144,7 @@ function buildSplashArt() {
     art += `${stripeTags[i]} ${paddedLine} {/}\n`;
   }
 
-  return `
-${art}
-
-{yellow-fg}v${VERSION} "${CODENAME}"{/}
-`;
+  return `\n${art}\n{yellow-fg}v${VERSION} "${CODENAME}"{/}\n`;
 }
 
 export function createUI() {
@@ -177,10 +164,7 @@ export function createUI() {
     valign: "middle",
     tags: true,
     border: { type: "none" },
-    style: {
-      fg: "white",
-      bg: "black"
-    },
+    style: { fg: "white", bg: "black" },
     content: buildSplashArt()
   });
 
@@ -241,6 +225,19 @@ export function createUI() {
   let lastTimeStr = "";
   let cachedBigTime = "";
   let splashHidden = false;
+  let resizeCallback = null;
+
+  // Escuchador dinámico adaptativo para el redimensionamiento de las ventanas
+  screen.on("resize", () => {
+    screen.realloc();
+    albumBox.setContent(""); // Evita el ghosting limpiando los caracteres antiguos desalineados
+    screen.render();
+    
+    // Si el player registró un callback, le notificamos que debe recalcular la carátula
+    if (typeof resizeCallback === "function") {
+      resizeCallback();
+    }
+  });
 
   function formatSeconds(sec = 0) {
     if (!isFinite(sec) || sec < 0) return "00:00";
@@ -265,7 +262,6 @@ export function createUI() {
 
   return {
     screen,
-
     showSplash,
     hideSplash,
 
@@ -274,14 +270,27 @@ export function createUI() {
       height: screen.height
     }),
 
+    // Expone las dimensiones internas útiles del Album Box (restando bordes de terminal)
+    getAlbumBoxSize: () => {
+      const width = albumBox.width || Math.floor(screen.width * 0.3);
+      const height = albumBox.height || Math.floor(screen.height * 0.7);
+      return {
+        width: Math.max(10, width - 4),
+        height: Math.max(5, height - 4)
+      };
+    },
+
+    // Permite al player suscribirse al resize global para redibujar imágenes al vuelo
+    onResize: (callback) => {
+      resizeCallback = callback;
+    },
+
     setNowPlaying: (trackName, current, total, percent) => {
       try {
-        const computedWidth =
-          typeof nowPlayingBox.width === "number"
-            ? nowPlayingBox.width
-            : Math.floor(screen.width * 0.7);
+        const currentBoxWidth = nowPlayingBox.width || Math.floor(screen.width * 0.7);
+        const currentBoxHeight = nowPlayingBox.height || Math.floor(screen.height * 0.7);
 
-        const barWidth = Math.max(15, computedWidth - 20);
+        const barWidth = Math.max(15, currentBoxWidth - 20);
 
         let safePercent = parseInt(percent, 10);
         if (Number.isNaN(safePercent) || safePercent < 0) safePercent = 0;
@@ -297,12 +306,20 @@ export function createUI() {
         const totalTimeStr = formatSeconds(total);
         const timeDisplayString = `${currentTimeStr} / ${totalTimeStr}`;
 
-        if (timeDisplayString !== lastTimeStr) {
-          lastTimeStr = timeDisplayString;
-          cachedBigTime = textToBigAscii(timeDisplayString);
+        const canRenderBigASCII = currentBoxWidth > 58 && currentBoxHeight > 14;
+
+        let timeRenderResult = "";
+        if (canRenderBigASCII) {
+          if (timeDisplayString !== lastTimeStr) {
+            lastTimeStr = timeDisplayString;
+            cachedBigTime = textToBigAscii(timeDisplayString);
+          }
+          timeRenderResult = `{cyan-fg}${cachedBigTime}{/}`;
+        } else {
+          timeRenderResult = `  {cyan-fg}{bold}▶ ${timeDisplayString}{/}`;
         }
 
-        const maxTextLength = Math.max(20, computedWidth - 15);
+        const maxTextLength = Math.max(20, currentBoxWidth - 15);
         let displayTrackName = String(trackName || "Unknown Track");
 
         if (displayTrackName.length > maxTextLength) {
@@ -315,7 +332,7 @@ export function createUI() {
             `{green-fg}{bold}📊 PROGRESS ({/}${safePercent}%{green-fg}{bold}){/}\n` +
             `  [${progressBar}]\n\n` +
             `{green-fg}{bold}⏱️ TIME ELAPSED (MIN:SEC){/}\n` +
-            `{cyan-fg}${cachedBigTime}{/}\n`
+            `${timeRenderResult}\n`
         );
 
         screen.render();
