@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-console.log("MASCII VERSION 2026");
-
 import { spawnSync } from "child_process";
+import { getVersionString } from "./core/version.js";
 
 import { createUI } from "./core/ui.js";
 import { createPlayer } from "./core/player.js";
 import { createVisualizer } from "./core/visualizer.js";
 import { createCommands } from "./core/commands.js";
 import { loadPlaylist } from "./core/playlist.js";
+
+console.log(`MASCII ${getVersionString()}`);
 
 function hasBinary(name) {
   const result = spawnSync("which", [name], {
@@ -61,11 +62,22 @@ function checkOptionalDependencies() {
   console.warn("Visualizer may be limited until they are installed.\n");
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function main() {
   checkDependencies();
   checkOptionalDependencies();
 
   const ui = createUI();
+
+  if (typeof ui.showSplash === "function") {
+    ui.showSplash();
+  }
+
+  const splashStartedAt = Date.now();
+  const splashMinDurationMs = 2500;
 
   let playlist = [];
 
@@ -94,6 +106,17 @@ ${String(error?.message || error)}
     player,
     visualizer
   });
+
+  const elapsedSplashTime = Date.now() - splashStartedAt;
+  const remainingSplashTime = Math.max(0, splashMinDurationMs - elapsedSplashTime);
+
+  if (remainingSplashTime > 0) {
+    await sleep(remainingSplashTime);
+  }
+
+  if (typeof ui.hideSplash === "function") {
+    ui.hideSplash();
+  }
 
   let cleanedUp = false;
 
@@ -153,20 +176,8 @@ ${String(error?.message || error)}
     cleanup(0);
   });
 
-  // =========================================================================
-  // PRUEBA DE DIAGNÓSTICO PARA LA INTERFERENCIA DE AUDIO:
-  // Comentamos temporalmente el inicio del visualizador. Si el audio suena bien
-  // tras este cambio, el problema es que el visualizador y mpv saturan el
-  // hardware de audio simultáneamente.
-  // =========================================================================
   visualizer.start();
-
-  // Renderizamos la interfaz gráfica inicial
   ui.render();
-
-  // CORRECCIÓN PARA LETRAS DUPLICADAS:
-  // Se elimina 'ui.focusInput()' de aquí. El foco lo gestiona exclusivamente
-  // el inicializador dentro de 'core/commands.js' para evitar eventos fantasma.
 }
 
 main();
