@@ -1,6 +1,6 @@
 {
   "name": "mascii",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "ASCII terminal music player",
   "main": "index.js",
   "type": "module",
@@ -26,8 +26,7 @@
     "ascii",
     "cli",
     "mpv",
-    "youtube",
-    "visualizer"
+    "youtube"
   ],
   "author": "coffeetron832",
   "license": "MIT",
