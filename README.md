@@ -13,7 +13,7 @@
 
 # MASCII - Your Terminal, Your Music, Your Vibe.
 
-![Version](https://img.shields.io/badge/version-1.0.2--Kingston-blue)
+![Version](https://img.shields.io/badge/version-1.0.4--Kingston-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0-brightgreen)
