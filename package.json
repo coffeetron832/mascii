@@ -1,6 +1,6 @@
 {
   "name": "mascii",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "ASCII terminal music player",
   "main": "index.js",
   "type": "module",
