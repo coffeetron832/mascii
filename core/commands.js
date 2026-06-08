@@ -7,6 +7,7 @@ const YTDLP_PATH = process.env.YTDLP_PATH || "/usr/local/bin/yt-dlp";
 
 export function createCommands({ ui, player }) {
   let isLocked = false;
+  let promptOpen = false;
 
   function log(message = "") {
     ui.appendLog(message);
@@ -24,10 +25,10 @@ export function createCommands({ ui, player }) {
 
     if (typeof ui.setVolumeState === "function") {
       ui.setVolumeState(
-        player.getVolume(),
-        player.isLoop(),
-        player.isShuffle(),
-        player.getEQ()
+        player.getVolume?.() ?? 0,
+        player.isLoop?.() ?? false,
+        player.isShuffle?.() ?? false,
+        player.getEQ?.() ?? "FLAT"
       );
     }
 
@@ -40,7 +41,7 @@ export function createCommands({ ui, player }) {
     const trimmedPath = String(targetPath || "").trim();
 
     if (!trimmedPath) {
-      log(`{red-fg}Missing path{/red-fg}\nUse keyboard shortcuts or verify folder layout.`);
+      log(`{red-fg}Missing path{/red-fg}\nUse a folder or file path.`);
       return;
     }
 
@@ -110,14 +111,9 @@ export function createCommands({ ui, player }) {
       );
 
       let stdout = "";
-      let stderr = "";
 
       proc.stdout.on("data", (chunk) => {
         stdout += chunk.toString();
-      });
-
-      proc.stderr.on("data", (chunk) => {
-        stderr += chunk.toString();
       });
 
       proc.on("error", () => {
@@ -131,8 +127,7 @@ export function createCommands({ ui, player }) {
         }
 
         try {
-          const json = JSON.parse(stdout);
-          resolve(json);
+          resolve(JSON.parse(stdout));
         } catch {
           resolve(null);
         }
@@ -143,16 +138,14 @@ export function createCommands({ ui, player }) {
   function isYoutubeUrl(url) {
     return (
       typeof url === "string" &&
-      (
-        url.includes("youtube.com") ||
-        url.includes("youtu.be")
-      )
+      (url.includes("youtube.com") || url.includes("youtu.be"))
     );
   }
 
   function extractFallbackTitle(url) {
     try {
       const urlObj = new URL(url);
+
       if (urlObj.searchParams.has("v")) {
         return `YT: ${urlObj.searchParams.get("v")}`;
       }
@@ -165,47 +158,77 @@ export function createCommands({ ui, player }) {
   }
 
   async function openYoutubePrompt() {
-    if (isLocked) return;
-    isLocked = true;
+    if (isLocked || promptOpen) return;
 
-    const promptBox = blessed.textbox({
+    isLocked = true;
+    promptOpen = true;
+
+    // Caja contenedora del formulario
+    const formBox = blessed.box({
       parent: ui.screen,
+      width: 90,
+      height: 7,
       top: "center",
       left: "center",
-      width: 72,
-      height: 3,
       border: { type: "line" },
+      label: " Paste YouTube URL ",
+      tags: true,
       style: {
         border: { fg: "orange" },
-        bg: "black"
-      },
-      label: " Paste YouTube URL and hit Enter ",
-      tags: true,
-      inputOnFocus: true,
-      keys: true
+        bg: "black",
+        fg: "white"
+      }
     });
 
-    ui.screen.append(promptBox);
-    promptBox.focus();
-    ui.screen.render();
+    // Label instruccional en inglés
+    blessed.element({
+      parent: formBox,
+      top: 1,
+      left: 2,
+      content: "Paste YouTube URL and press ENTER (ESC to cancel):",
+      style: { bg: "black", fg: "white" }
+    });
 
-    const finish = () => {
+    // Input de texto clásico adaptado
+    const inputField = blessed.textbox({
+      parent: formBox,
+      top: 3,
+      left: 2,
+      width: 84,
+      height: 1,
+      inputOnFocus: true,
+      style: {
+        bg: "white",
+        fg: "black"
+      }
+    });
+
+    const closePrompt = () => {
       try {
-        promptBox.destroy();
+        inputField.unkey("escape");
+        formBox.destroy();
       } catch {}
+
+      promptOpen = false;
       isLocked = false;
-      if (ui.screen && typeof ui.screen.render === "function") {
+
+      if (ui.screen) {
+        ui.screen.grabKeys = false;
         ui.screen.render();
       }
     };
 
-    promptBox.on("submit", async (value) => {
-      const url = String(value || "").trim();
-      finish();
+    // Salida limpia con Escape
+    inputField.key(["escape"], () => {
+      closePrompt();
+    });
 
-      if (!url) {
-        return;
-      }
+    // Procesar envío de datos con Enter
+    inputField.on("submit", async (value) => {
+      const url = String(value || "").trim();
+      closePrompt();
+
+      if (!url) return;
 
       if (!isYoutubeUrl(url) && !url.startsWith("http")) {
         log(`{red-fg}Invalid streaming URL{/red-fg}`);
@@ -213,29 +236,13 @@ export function createCommands({ ui, player }) {
       }
 
       const fallbackTitle = extractFallbackTitle(url);
-
       log(`{yellow-fg}Resolving YouTube metadata...{/yellow-fg}`);
 
       const meta = isYoutubeUrl(url) ? await runYtDlpJson(url) : null;
-
-      const title =
-        meta?.title ||
-        fallbackTitle;
-
-      const artist =
-        meta?.uploader ||
-        meta?.channel ||
-        meta?.uploader_id ||
-        "YouTube";
-
-      const duration =
-        Number.isFinite(meta?.duration)
-          ? Math.max(1, Math.round(meta.duration))
-          : 0;
-
-      const thumbnail =
-        meta?.thumbnail ||
-        null;
+      const title = meta?.title || fallbackTitle;
+      const artist = meta?.uploader || meta?.channel || meta?.uploader_id || "YouTube";
+      const duration = Number.isFinite(meta?.duration) ? Math.max(1, Math.round(meta.duration)) : 0;
+      const thumbnail = meta?.thumbnail || null;
 
       if (typeof player.addTrack === "function") {
         player.addTrack({
@@ -247,7 +254,6 @@ export function createCommands({ ui, player }) {
           source: isYoutubeUrl(url) ? "youtube" : "stream",
           webpage_url: url
         });
-
         log(`{green-fg}URL added to playlist!{/green-fg}`);
       } else {
         log(`{red-fg}Player cannot add tracks{/red-fg}`);
@@ -256,53 +262,53 @@ export function createCommands({ ui, player }) {
       updatePlaylistUI();
     });
 
-    promptBox.on("cancel", () => {
-      finish();
-    });
+    // Despierta el render y enfoca el campo de texto directamente de forma nativa
+    ui.screen.render();
+    inputField.focus();
   }
 
   function runCommand(commandName, args = []) {
     switch (commandName) {
       case "toggle":
-        if (typeof player.toggle === "function") player.toggle();
+        player.toggle?.();
         break;
 
       case "next":
-        if (typeof player.next === "function") player.next();
+        player.next?.();
         break;
 
       case "prev":
-        if (typeof player.prev === "function") player.prev();
+        player.prev?.();
         break;
 
       case "stop":
-        if (typeof player.stop === "function") player.stop();
+        player.stop?.();
         break;
 
       case "volup":
         if (typeof player.setVolume === "function") {
-          const currentVol = player.getVolume();
+          const currentVol = player.getVolume?.() ?? 0;
           player.setVolume(Math.min(100, currentVol + 5));
         }
         break;
 
       case "voldown":
         if (typeof player.setVolume === "function") {
-          const currentVol = player.getVolume();
+          const currentVol = player.getVolume?.() ?? 0;
           player.setVolume(Math.max(0, currentVol - 5));
         }
         break;
 
       case "loop":
-        if (typeof player.toggleLoop === "function") player.toggleLoop();
+        player.toggleLoop?.();
         break;
 
       case "shuffle":
-        if (typeof player.toggleShuffle === "function") player.toggleShuffle();
+        player.toggleShuffle?.();
         break;
 
       case "eq":
-        if (typeof player.cycleEQ === "function") player.cycleEQ();
+        player.cycleEQ?.();
         break;
 
       case "load":
@@ -320,12 +326,8 @@ export function createCommands({ ui, player }) {
         break;
 
       case "quit":
-        if (typeof player.stop === "function") {
-          player.stop();
-        }
-        if (ui.screen && typeof ui.screen.destroy === "function") {
-          ui.screen.destroy();
-        }
+        player.stop?.();
+        ui.screen?.destroy?.();
         process.exit(0);
         return;
 
@@ -341,7 +343,7 @@ export function createCommands({ ui, player }) {
   }
 
   ui.getInput((ch, key) => {
-    if (isLocked) return;
+    if (isLocked || promptOpen) return;
 
     const name = key ? key.name : "";
 
