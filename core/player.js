@@ -7,7 +7,6 @@ import net from "net";
 import * as mm from "music-metadata";
 import sharp from "sharp";
 
-// Cambiado a 'let' para que pueda reasignarse dinámicamente desde la UI
 let MUSIC_DIR = path.resolve("./music"); 
 const SUPPORTED_EXTENSIONS = new Set([".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac"]);
 const DEFAULT_DURATION = 180;

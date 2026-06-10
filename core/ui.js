@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { VERSION, CODENAME } from "./version.js";
 
-// Matriz tipográfica de Alta Resolución (Altura: 5 celdas) para máxima legibilidad
+// Matriz tipográfica (Altura: 5 celdas) para máxima legibilidad
 const ASCII_DIGITS = {
   "0": [
     "▄███▄",
