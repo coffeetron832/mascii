@@ -45,6 +45,12 @@ npm install -g mascii
 
 ---
 
+## Acknowledgements & Credits
+
+* **Default ASCII Art Mascot:** The cute default cow mascot used in the player was sourced from the [ASCII Art Archive](https://www.asciiart.eu/art/495363fc8e89c778). Huge thanks to the anonymous artist and the community for preserving these amazing terminal graphics!
+
+---
+
 ## Controls
 
 Inside the app:
