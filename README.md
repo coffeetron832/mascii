@@ -45,7 +45,7 @@ npm install -g mascii
 
 ---
 
-## 🎮 Controls
+## Controls
 
 Inside the app:
 
