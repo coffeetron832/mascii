@@ -11,7 +11,7 @@
                               ░                
 ```
 
-# MASCII - Your Terminal, Your Music, Your Vibe.
+# mascii - Your Terminal, Your Music, Your Vibe.
 
 ![Version](https://img.shields.io/badge/version-1.1.0--Kingston-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
