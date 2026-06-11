@@ -6,7 +6,7 @@
   <title>MASCII v1.1.0 - Kingston</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800;900&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -27,12 +27,11 @@
     body {
       background-color: var(--bg-color);
       color: var(--fg-color);
-      font-family: 'Archivo', sans-serif;
+      font-family: 'JetBrains Mono', monospace;
       padding: 40px 20px;
       overflow-x: hidden;
     }
 
-    /* --- ESTILO LETRIALISTA: Líneas de estructura limpias --- */
     header {
       max-width: 1100px;
       margin: 0 auto 40px auto;
@@ -49,19 +48,16 @@
     }
 
     .brand-subtitle {
-      font-family: 'JetBrains Mono', monospace;
       font-size: 1rem;
       color: var(--yellow-terminal);
       margin-top: 5px;
     }
 
-    /* --- INTERFAZ SIMULADA DE TUI (Terminal User Interface) --- */
     .terminal-container {
       max-width: 1100px;
       margin: 0 auto;
       display: grid;
       grid-template-columns: 30% 70%;
-      font-family: 'JetBrains Mono', monospace;
       background-color: #000000;
     }
 
@@ -82,7 +78,6 @@
       font-weight: bold;
     }
 
-    /* --- PANELES SUPERIORES --- */
     .album-box {
       grid-column: 1;
       border-color: var(--cyan-terminal);
@@ -103,7 +98,6 @@
     }
     .now-playing-box .tui-label { color: var(--green-terminal); }
 
-    /* --- PANELES INFERIORES --- */
     .playlist-box {
       grid-column: 1 / span 1;
       border-color: var(--yellow-terminal);
@@ -123,7 +117,6 @@
     }
     .status-box .tui-label { color: var(--green-terminal); }
 
-    /* --- CONTENIDO INTERNO --- */
     .ascii-cow {
       white-space: pre;
       font-size: 0.9rem;
@@ -175,7 +168,6 @@
       color: #bbbbbb;
     }
 
-    /* --- SECCIÓN DE INSTALACIÓN --- */
     .install-section {
       max-width: 1100px;
       margin: 40px auto;
@@ -200,7 +192,6 @@
       display: flex;
       align-items: center;
       gap: 15px;
-      font-family: 'JetBrains Mono', monospace;
     }
 
     .btn-copy {
@@ -209,7 +200,6 @@
       color: var(--fg-color);
       padding: 5px 10px;
       cursor: pointer;
-      font-family: 'JetBrains Mono', monospace;
       font-size: 0.8rem;
       transition: all 0.2s ease;
     }
@@ -218,7 +208,6 @@
       color: var(--bg-color);
     }
 
-    /* --- SECCIÓN SOBRE EL PROYECTO --- */
     .about-section {
       max-width: 1100px;
       margin: 60px auto 0 auto;
@@ -253,7 +242,6 @@
       text-decoration: underline;
     }
 
-    /* --- RESPONSIVIDAD RÁPIDA --- */
     @media (max-width: 800px) {
       .terminal-container { display: flex; flex-direction: column; }
       .bottom-layout { display: flex; flex-direction: column; }
