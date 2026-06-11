@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MASCII v1.1.0 - Kingston</title>
+  <title>MASCII v1.1.0 - Kingston Terminal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -15,7 +15,8 @@
       --cyan-terminal: #00ffff;
       --green-terminal: #00ff00;
       --yellow-terminal: #ffff00;
-      --gray-border: #333333;
+      --gray-border: #444444;
+      --dim-text: #888888;
     }
 
     * {
@@ -34,87 +35,100 @@
       position: relative;
     }
 
-    .splash-screen {
+    /* TERMINAL WELCOME INTERFACE */
+    .terminal-welcome {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background-color: var(--bg-color);
+      z-index: 200;
+      padding: 30px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-      text-align: center;
-      transition: opacity 0.25s ease, visibility 0.25s ease;
+      justify-content: flex-start;
+      align-items: flex-start;
+      font-size: 1rem;
+      line-height: 1.6;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
     }
 
-    .splash-screen.hidden {
+    .terminal-welcome.hidden {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
     }
 
-    .splash-art {
-      white-space: pre;
-      font-size: 0.85vw;
-      line-height: 1.2;
-      margin-bottom: 25px;
+    .prompt-line {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin-top: 15px;
     }
 
-    .stripe-green { background-color: var(--green-terminal); color: #000; }
-    .stripe-yellow { background-color: var(--yellow-terminal); color: #000; }
-
-    .splash-version {
-      font-size: 1.1rem;
-      color: var(--yellow-terminal);
-      margin-bottom: 40px;
+    .prompt-user {
+      color: var(--green-terminal);
+      font-weight: bold;
+      margin-right: 10px;
+      white-space: nowrap;
     }
 
-    .prompt-text {
-      font-size: 1.2rem;
+    .terminal-input {
+      background: transparent;
+      border: none;
       color: var(--fg-color);
-      animation: blink 1.2s infinite;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      outline: none;
+      flex-grow: 1;
+      caret-color: var(--green-terminal);
     }
 
+    /* FULLSCREEN PLAYER INTERFACE */
     .terminal-fullscreen {
       width: 100%;
       height: 100%;
       display: grid;
-      grid-template-columns: 30% 70%;
-      grid-template-rows: 70% 30%;
+      grid-template-columns: 32% 68%;
+      grid-template-rows: 65% 35%;
       background-color: #000000;
+      opacity: 0;
+      transform: scale(0.99);
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
+    .terminal-fullscreen.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* COLLAPSED BORDERS LINKED TO BLESSED TUI STYLE */
     .tui-box {
       border: 1px solid var(--gray-border);
+      margin: -0.5px;
       position: relative;
-      padding: 20px;
+      padding: 25px;
       background-color: #000000;
-      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .tui-label {
       position: absolute;
       top: -10px;
-      left: 15px;
+      left: 18px;
       background-color: var(--bg-color);
-      padding: 0 5px;
-      font-size: 0.85rem;
+      padding: 0 6px;
+      font-size: 0.8rem;
       font-weight: bold;
+      letter-spacing: 1px;
     }
 
     .album-box {
       grid-column: 1;
       grid-row: 1;
       border-color: var(--cyan-terminal);
-      color: var(--cyan-terminal);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
     }
     .album-box .tui-label { color: var(--cyan-terminal); }
 
@@ -122,11 +136,6 @@
       grid-column: 2;
       grid-row: 1;
       border-color: var(--green-terminal);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      padding-top: 30px;
-      padding-left: 40px;
     }
     .now-playing-box .tui-label { color: var(--green-terminal); }
 
@@ -140,178 +149,187 @@
     .status-box {
       grid-column: 2;
       grid-row: 2;
-      border-color: var(--green-terminal);
-      padding-top: 25px;
-      padding-left: 30px;
+      border-color: var(--cyan-terminal);
     }
-    .status-box .tui-label { color: var(--green-terminal); }
+    .status-box .tui-label { color: var(--cyan-terminal); }
 
-    .ascii-cow {
-      white-space: pre;
-      font-size: 0.95rem;
-      line-height: 1.2;
-      margin-bottom: 20px;
-      color: var(--fg-color);
-    }
-
-    .meta-text {
-      font-size: 0.9rem;
-    }
-
-    .terminal-bold { font-weight: bold; color: var(--green-terminal); }
-    .terminal-cyan { color: var(--cyan-terminal); }
-    .terminal-yellow { color: var(--yellow-terminal); }
-
-    .progress-bar {
-      margin: 12px 0;
-      letter-spacing: -1px;
+    /* INNER INFORMATIVE LAYOUT */
+    .info-title {
       font-size: 1.1rem;
-    }
-
-    .big-time-ascii {
-      white-space: pre;
-      font-size: 0.55rem;
-      line-height: 1.1;
-      margin-top: 15px;
-      color: var(--cyan-terminal);
-    }
-
-    .track-list {
-      list-style: none;
-      font-size: 0.85rem;
-      height: 100%;
-      overflow-y: auto;
-    }
-    .track-list li {
-      padding: 4px 5px;
-      color: #aaaaaa;
-    }
-    .track-list li.selected {
-      background-color: var(--yellow-terminal);
-      color: #000000;
       font-weight: bold;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    
+    .info-divider {
+      width: 100%;
+      height: 1px;
+      background-color: #222222;
+      margin-bottom: 15px;
     }
 
-    .config-grid {
-      display: grid;
-      grid-template-columns: 1fr;
+    .info-text {
       font-size: 0.85rem;
       line-height: 1.5;
-      color: #bbbbbb;
+      color: #cccccc;
+      margin-bottom: 15px;
     }
 
-    .shortcut-col {
-      float: right; 
-      color: white; 
-      font-weight: bold;
+    .highlight-yellow { color: var(--yellow-terminal); font-weight: bold; }
+    .highlight-cyan { color: var(--cyan-terminal); font-weight: bold; }
+    .highlight-green { color: var(--green-terminal); font-weight: bold; }
+
+    .spec-list {
+      list-style: none;
+      font-size: 0.8rem;
+    }
+    .spec-list li {
+      margin-bottom: 6px;
+      color: #aaaaaa;
     }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
+    .ascii-logo-small {
+      white-space: pre;
+      font-size: 0.5vw;
+      line-height: 1.1;
+      color: var(--yellow-terminal);
+      margin-bottom: 15px;
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       .terminal-fullscreen {
         grid-template-columns: 1fr;
         grid-template-rows: repeat(4, auto);
         overflow-y: auto;
       }
-      .album-box, .now-playing-box, .playlist-box, .status-box {
-        grid-column: 1 / span 1;
-        grid-row: auto;
-        min-height: 250px;
+      .tui-box {
+        min-height: 280px;
+        margin: 5px 0;
       }
-      .splash-art {
-        font-size: 1.8vw;
+      .ascii-logo-small {
+        font-size: 1.2vw;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="splash-screen" id="splashScreen">
-    <div class="splash-art"><span class="stripe-green"> ███▄ ▄███▓ ▄▄▄          ██████  ▄████▄   ██▓ ██▓ </span>
-<span class="stripe-yellow"> ▓██▒▀█▀ ██▒▒████▄      ▒██    ▒ ▒██▀ ▀█  ▓██▒▓██▒ </span>
-<span class="stripe-green"> ▓██    ▓██░▒██  ▀█▄    ░ ▓██▄   ▒▓█    ▄ ▒██▒▒██▒ </span>
-<span class="stripe-yellow"> ▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒▒▓▓▄ ▄██▒░██░░██░ </span>
-<span class="stripe-green"> ▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒▒ ▓███▀ ░░██░░██░ </span>
-<span class="stripe-yellow"> ░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░░▓  ░▓   </span>
-<span class="stripe-green"> ░  ░      ░  ▒   ▒▒ ░░ ░▒  ░ ░  ░  ▒    ▒ ░ ▒ ░ </span>
-<span class="stripe-yellow"> ░      ░      ░   ▒    ░  ░  ░  ░          ▒ ░ ▒ ░ </span>
-<span class="stripe-green">        ░          ░  ░        ░  ░ ░        ░   ░  </span>
-<span class="stripe-yellow">                                      ░             </span></div>
-    <div class="splash-version">v1.1.0 "Kingston"</div>
-    <div class="prompt-text">Press ENTER to launch MASCII Player</div>
+  <div class="terminal-welcome" id="terminalWelcome">
+    <p style="color: var(--dim-text);">MASCII(tm) Core Server Connection - Guest Shell Sandbox</p>
+    <p>System status: Online | Host environment verified</p>
+    <p style="margin-top: 10px;">Welcome to the minimalist audio interface gateway. Type <span class="highlight-yellow">mascii</span> to spin up the Text User Interface workspace.</p>
+    
+    <div class="prompt-line">
+      <span class="prompt-user">guest@mascii:~ $</span>
+      <input type="text" class="terminal-input" id="terminalInput" autofocus autocomplete="off" spellcheck="false">
+    </div>
+    <p id="errorMsg" style="color: red; font-size: 0.85rem; margin-top: 10px; display: none;">Unknown command. Please type "mascii" to launch the environment.</p>
   </div>
 
-  <section class="terminal-fullscreen">
+  <section class="terminal-fullscreen" id="appInterface">
     
     <div class="tui-box album-box">
-      <div class="tui-label"> [ ALBUM ART ] </div>
-      <div class="ascii-cow">
-    \|/          (__)  
-        `\------(oo) 
-          ||    (__)  
-          ||w--||     \|/
-       \|/             </div>
-      <div class="meta-text">
-        <p class="terminal-yellow">Art Not Available</p>
-        <p style="color: #666;">(2026)</p>
-      </div>
+      <div class="tui-label"> [ MASCII CORE ] </div>
+      <div class="ascii-logo-small">
+ ███▄ ▄███▓ ▄▄▄          ██████ 
+▓██▒▀█▀ ██▒▒████▄      ▒██    ▒ 
+▓██    ▓██░▒██  ▀█▄    ░ ▓██▄   
+▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒
+▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒
+░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░</div>
+      <div class="info-title highlight-cyan">MASCII v1.1.0</div>
+      <div class="info-divider"></div>
+      <p class="info-text">A minimalist, terminal-based hybrid music player engineered under a strict keyboard-driven control scheme and pure typography layouts.</p>
+      <ul class="spec-list">
+        <li>• <span class="highlight-yellow">Codename:</span> Kingston Stable Release</li>
+        <li>• <span class="highlight-yellow">Engine Stack:</span> Node.js Ecosystem</li>
+        <li>• <span class="highlight-yellow">UI Wrapper:</span> Blessed Architecture Grid</li>
+        <li>• <span class="highlight-yellow">Output Target:</span> Standard Terminal Buffer</li>
+      </ul>
     </div>
 
     <div class="tui-box now-playing-box">
-      <div class="tui-label"> [ NOW PLAYING ] </div>
-      <p class="terminal-bold">🎵 CURRENT TRACK</p>
-      <p style="margin-left: 15px; margin-bottom: 20px;">Welcome to MASCII v1.1.0 Kingston</p>
+      <div class="tui-label"> [ PLAYER CAPABILITIES ] </div>
+      <div class="info-title highlight-green">Stream Pipelines & Audio Optimization</div>
+      <div class="info-divider"></div>
+      <p class="info-text">MASCII natively processes local tracks and remote streams with zero graphical overhead, ensuring low memory foot-prints across development setups.</p>
       
-      <p class="terminal-bold">📊 PROGRESS (<span class="terminal-yellow">45%</span>)</p>
-      <p class="progress-bar" style="margin-left: 15px; margin-bottom: 20px;">
-        <span class="terminal-green">███████████████████</span><span style="color: #333;">░░░░░░░░░░░░░░░░░░░░░░░</span>
-      </p>
-
-      <p class="terminal-bold">⏱️ TIME ELAPSED (MIN:SEC)</p>
-      <div class="big-time-ascii">
- ▄███▄   ▄█    ▄   ▄███▄   █   █ 
- █▀   █   █    ▀   █▀   █  █   █ 
- █    █   █        ▄███▀   █████ 
- █▄   █   █    ▄   █           █ 
- ▀███▀  █████  ▀   █████       █ </div>
+      <p class="info-text" style="font-weight: bold; color: white; margin-bottom: 5px;">Key Features Built In:</p>
+      <ul class="spec-list" style="margin-left: 10px; margin-bottom: 15px;">
+        <li><span class="highlight-green">✓ YouTube Streaming Core:</span> Dedicated background wrappers stream remote media directly into the command line shell using specific key triggers.</li>
+        <li><span class="highlight-green">✓ Live Equalizer Engine:</span> Real-time hardware preset cycles (Rock, Pop, Flat, etc.) for customized listening environments.</li>
+        <li><span class="highlight-green">✓ Big ASCII Display Matrix:</span> High-legibility custom typographic font matrix updating frame-by-frame for elapsed tracking times.</li>
+      </ul>
+      <p class="info-text" style="font-size: 0.8rem; color: var(--dim-text); font-style: italic;">"Audio fidelity shouldn't depend on high-overhead graphical frameworks."</p>
     </div>
 
     <div class="tui-box playlist-box">
-      <div class="tui-label"> [ TRACKLIST ] </div>
-      <ul class="track-list">
-        <li class="selected">▶ * 01. Queen - Bohemian Rhapsody.mp3</li>
-        <li>    02. Daft Punk - One More Time.flac</li>
-        <li>    03. Michael Jackson - Billie Jean.wav</li>
-        <li>    04. Bob Marley - Redemption Song.ogg</li>
-        <li>    05. Beethoven - Symphony No. 9 (Ode to Joy).m4a</li>
-        <li>    06. Soda Stereo - De Musica Ligera.aac</li>
+      <div class="tui-label"> [ FILE SYSTEM INTEGRATION ] </div>
+      <div class="info-title highlight-yellow">Reactive Browser</div>
+      <div class="info-divider"></div>
+      <p class="info-text">The framework hosts an asynchronous native file tree explorer inside <span class="highlight-cyan">core/ui.js</span> that monitors local files system blocks.</p>
+      <ul class="spec-list">
+        <li>• Supported Formats: <span style="color:white;">.mp3, .wav, .ogg, .flac, .m4a</span></li>
+        <li>• Asynchronous Tree Mapping (<span style="color: var(--cyan-terminal);">fs.readdirSync</span>)</li>
+        <li>• Live Playlist Data Caching Layer</li>
       </ul>
     </div>
 
     <div class="tui-box status-box">
-      <div class="tui-label"> [ AUDIO CONFIG & CONTROLS ] </div>
-      <div class="config-grid">
-        <div><span class="terminal-bold" style="color:white;">STATE</span><span class="shortcut-col">KEYBOARD SHORTCUTS</span></div>
-        <div>• Volume:    [80%]           ▲/▼ o +/- : Vol Up/Down</div>
-        <div>• Loop:      [DISABLED]           L         : Toggle Loop</div>
-        <div>• Shuffle:   [OFF]              Z         : Toggle Shuffle</div>
-        <div>• Equalizer: <span class="terminal-green">[   ROCK]</span>           E         : Cycle EQ Presets</div>
-        <div style="color: #666; margin-top: 8px;">SPACE: Play/Pause | N/P: Next/Prev | F: Browse Files | S/Q: Quit</div>
+      <div class="tui-label"> [ KEYBOARD SHORTCUTS REFERENCE ] </div>
+      <div class="info-title" style="color: white;">Global Event Mapping Matrix</div>
+      <div class="info-divider"></div>
+      <p class="info-text" style="font-size: 0.8rem; margin-bottom: 10px;">The runtime interface relies on targeted global listener keypress matrices:</p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem; color: #aaa;">
+        <div>
+          <p><span class="highlight-cyan">SPACE</span> : Play / Pause Toggle</p>
+          <p><span class="highlight-cyan">▲ / ▼</span> : Volume Master Up / Down</p>
+          <p><span class="highlight-cyan">N / P</span> : Skip Next / Previous Track</p>
+        </div>
+        <div>
+          <p><span class="highlight-cyan">L</span> : Toggle Loop Sequences</p>
+          <p><span class="highlight-cyan">F / TAB</span> : File System Browser Overlay</p>
+          <p><span class="highlight-cyan">S / Q</span> : Stop Engine / Safe Exit</p>
+        </div>
       </div>
     </div>
 
   </section>
 
   <script>
-    document.addEventListener('keydown', function(event) {
+    const terminalInput = document.getElementById('terminalInput');
+    const terminalWelcome = document.getElementById('terminalWelcome');
+    const appInterface = document.getElementById('appInterface');
+    const errorMsg = document.getElementById('errorMsg');
+
+    // Force focus onto command line input channel
+    document.addEventListener('click', () => {
+      if (!terminalWelcome.classList.contains('hidden')) {
+        terminalInput.focus();
+      }
+    });
+
+    terminalInput.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
-        const splash = document.getElementById('splashScreen');
-        if (!splash.classList.contains('hidden')) {
-          splash.classList.add('hidden');
+        const command = terminalInput.value.trim().toLowerCase();
+        
+        if (command === 'mascii') {
+          errorMsg.style.display = 'none';
+          terminalInput.disabled = true;
+          
+          const loadingText = document.createElement('p');
+          loadingText.innerHTML = `<span style="color: var(--cyan-terminal);">Loading MASCII binary elements... Done. Initializing TUI Workspace.</span>`;
+          terminalWelcome.appendChild(loadingText);
+
+          setTimeout(() => {
+            terminalWelcome.classList.add('hidden');
+            appInterface.classList.add('visible');
+          }, 600);
+
+        } else if (command !== '') {
+          errorMsg.style.display = 'block';
+          terminalInput.value = '';
         }
       }
     });
