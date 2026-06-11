@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MASCII v1.1.0 - Kingston Terminal</title>
+  <title>mascii</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -90,8 +90,8 @@
       width: 100%;
       height: 100%;
       display: grid;
-      grid-template-columns: 32% 68%;
-      grid-template-rows: 65% 35%;
+      grid-template-columns: 35% 65%;
+      grid-template-rows: 62% 38%;
       background-color: #000000;
       opacity: 0;
       transform: scale(0.99);
@@ -103,15 +103,16 @@
       transform: scale(1);
     }
 
-    /* COLLAPSED BORDERS LINKED TO BLESSED TUI STYLE */
+    /* COLLAPSED BORDERS WITH SCROLL PREVENTIONS */
     .tui-box {
       border: 1px solid var(--gray-border);
       margin: -0.5px;
       position: relative;
-      padding: 25px;
+      padding: 22px 20px;
       background-color: #000000;
       display: flex;
       flex-direction: column;
+      overflow-y: auto; /* Prevents text cutting off by allowing scrolling if needed */
     }
 
     .tui-label {
@@ -153,11 +154,11 @@
     }
     .status-box .tui-label { color: var(--cyan-terminal); }
 
-    /* INNER INFORMATIVE LAYOUT */
+    /* INNER GENERAL-PUBLIC LAYOUT */
     .info-title {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: bold;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       text-transform: uppercase;
     }
     
@@ -165,14 +166,14 @@
       width: 100%;
       height: 1px;
       background-color: #222222;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
     .info-text {
       font-size: 0.85rem;
-      line-height: 1.5;
+      line-height: 1.4;
       color: #cccccc;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
     .highlight-yellow { color: var(--yellow-terminal); font-weight: bold; }
@@ -184,16 +185,16 @@
       font-size: 0.8rem;
     }
     .spec-list li {
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       color: #aaaaaa;
     }
 
     .ascii-logo-small {
       white-space: pre;
-      font-size: 0.5vw;
+      font-size: 0.55vw;
       line-height: 1.1;
       color: var(--yellow-terminal);
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
     @media (max-width: 900px) {
@@ -203,11 +204,11 @@
         overflow-y: auto;
       }
       .tui-box {
-        min-height: 280px;
+        min-height: 250px;
         margin: 5px 0;
       }
       .ascii-logo-small {
-        font-size: 1.2vw;
+        font-size: 1.5vw;
       }
     }
   </style>
@@ -215,21 +216,21 @@
 <body>
 
   <div class="terminal-welcome" id="terminalWelcome">
-    <p style="color: var(--dim-text);">MASCII(tm) Core Server Connection - Guest Shell Sandbox</p>
-    <p>System status: Online | Host environment verified</p>
-    <p style="margin-top: 10px;">Welcome to the minimalist audio interface gateway. Type <span class="highlight-yellow">mascii</span> to spin up the Text User Interface workspace.</p>
+    <p style="color: var(--dim-text);">MASCII Audio Player Server Connection - Guest Shell</p>
+    <p>System status: Ready</p>
+    <p style="margin-top: 10px;">Welcome to the retro music player app. Type <span class="highlight-yellow">mascii</span> and press Enter to start the music player layout.</p>
     
     <div class="prompt-line">
       <span class="prompt-user">guest@mascii:~ $</span>
       <input type="text" class="terminal-input" id="terminalInput" autofocus autocomplete="off" spellcheck="false">
     </div>
-    <p id="errorMsg" style="color: red; font-size: 0.85rem; margin-top: 10px; display: none;">Unknown command. Please type "mascii" to launch the environment.</p>
+    <p id="errorMsg" style="color: red; font-size: 0.85rem; margin-top: 10px; display: none;">Command not found. Please type "mascii" to start the player.</p>
   </div>
 
   <section class="terminal-fullscreen" id="appInterface">
     
     <div class="tui-box album-box">
-      <div class="tui-label"> [ MASCII CORE ] </div>
+      <div class="tui-label"> [ ABOUT MASCII ] </div>
       <div class="ascii-logo-small">
  ███▄ ▄███▓ ▄▄▄          ██████ 
 ▓██▒▀█▀ ██▒▒████▄      ▒██    ▒ 
@@ -237,60 +238,60 @@
 ▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒
 ▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒
 ░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░</div>
-      <div class="info-title highlight-cyan">MASCII v1.1.0</div>
+      <div class="info-title highlight-cyan">What is MASCII?</div>
       <div class="info-divider"></div>
-      <p class="info-text">A minimalist, terminal-based hybrid music player engineered under a strict keyboard-driven control scheme and pure typography layouts.</p>
+      <p class="info-text">MASCII is a simple, lightweight music player that runs inside a retro text terminal. It is designed to be controlled entirely with your keyboard using straight lines and clean text shapes.</p>
       <ul class="spec-list">
-        <li>• <span class="highlight-yellow">Codename:</span> Kingston Stable Release</li>
-        <li>• <span class="highlight-yellow">Engine Stack:</span> Node.js Ecosystem</li>
-        <li>• <span class="highlight-yellow">UI Wrapper:</span> Blessed Architecture Grid</li>
-        <li>• <span class="highlight-yellow">Output Target:</span> Standard Terminal Buffer</li>
+        <li>• <span class="highlight-yellow">Current Version:</span> v1.1.0 Kingston</li>
+        <li>• <span class="highlight-yellow">Interface Style:</span> Classic Text Box Grid</li>
+        <li>• <span class="highlight-yellow">Design Concept:</span> Clean Retro Typography</li>
       </ul>
     </div>
 
     <div class="tui-box now-playing-box">
-      <div class="tui-label"> [ PLAYER CAPABILITIES ] </div>
-      <div class="info-title highlight-green">Stream Pipelines & Audio Optimization</div>
+      <div class="tui-label"> [ WHAT IT CAN DO ] </div>
+      <div class="info-title highlight-green">Main Features & Functions</div>
       <div class="info-divider"></div>
-      <p class="info-text">MASCII natively processes local tracks and remote streams with zero graphical overhead, ensuring low memory foot-prints across development setups.</p>
+      <p class="info-text">This app plays your favorite songs smoothly without using heavy graphics or distracting layouts, keeping your computer running light and fast.</p>
       
-      <p class="info-text" style="font-weight: bold; color: white; margin-bottom: 5px;">Key Features Built In:</p>
-      <ul class="spec-list" style="margin-left: 10px; margin-bottom: 15px;">
-        <li><span class="highlight-green">✓ YouTube Streaming Core:</span> Dedicated background wrappers stream remote media directly into the command line shell using specific key triggers.</li>
-        <li><span class="highlight-green">✓ Live Equalizer Engine:</span> Real-time hardware preset cycles (Rock, Pop, Flat, etc.) for customized listening environments.</li>
-        <li><span class="highlight-green">✓ Big ASCII Display Matrix:</span> High-legibility custom typographic font matrix updating frame-by-frame for elapsed tracking times.</li>
+      <p class="info-text" style="font-weight: bold; color: white; margin-bottom: 5px;">Key Highlights:</p>
+      <ul class="spec-list" style="margin-left: 10px; margin-bottom: 12px;">
+        <li><span class="highlight-green">✓ YouTube Audio Streaming:</span> You can use special keys to look up and stream music directly from YouTube into the app.</li>
+        <li><span class="highlight-green">✓ Sound Equalizer Presets:</span> Cycle through different audio configurations (like Rock, Pop, or Flat) to match your music style.</li>
+        <li><span class="highlight-green">✓ Visual Time Clock:</span> Watch the track time update frame-by-frame with a big, creative retro text design.</li>
       </ul>
-      <p class="info-text" style="font-size: 0.8rem; color: var(--dim-text); font-style: italic;">"Audio fidelity shouldn't depend on high-overhead graphical frameworks."</p>
     </div>
 
     <div class="tui-box playlist-box">
-      <div class="tui-label"> [ FILE SYSTEM INTEGRATION ] </div>
-      <div class="info-title highlight-yellow">Reactive Browser</div>
+      <div class="tui-label"> [ YOUR MUSIC FILES ] </div>
+      <div class="info-title highlight-yellow">File Compatibility</div>
       <div class="info-divider"></div>
-      <p class="info-text">The framework hosts an asynchronous native file tree explorer inside <span class="highlight-cyan">core/ui.js</span> that monitors local files system blocks.</p>
+      <p class="info-text">The player includes a built-in music browser that directly scans your folders to locate your songs automatically.</p>
       <ul class="spec-list">
-        <li>• Supported Formats: <span style="color:white;">.mp3, .wav, .ogg, .flac, .m4a</span></li>
-        <li>• Asynchronous Tree Mapping (<span style="color: var(--cyan-terminal);">fs.readdirSync</span>)</li>
-        <li>• Live Playlist Data Caching Layer</li>
+        <li>• <span class="highlight-cyan">Supported Audio:</span> .mp3, .wav, .ogg, .flac, .m4a</li>
+        <li>• <span class="highlight-cyan">Live Playlist:</span> Keeps your tracklists organized</li>
+        <li>• <span class="highlight-cyan">Quick Loading:</span> Instantly jumps to any folder</li>
       </ul>
     </div>
 
     <div class="tui-box status-box">
-      <div class="tui-label"> [ KEYBOARD SHORTCUTS REFERENCE ] </div>
-      <div class="info-title" style="color: white;">Global Event Mapping Matrix</div>
+      <div class="tui-label"> [ HOW TO CONTROL THE PLAYER ] </div>
+      <div class="info-title" style="color: white;">Keyboard Control Guide</div>
       <div class="info-divider"></div>
-      <p class="info-text" style="font-size: 0.8rem; margin-bottom: 10px;">The runtime interface relies on targeted global listener keypress matrices:</p>
+      <p class="info-text" style="font-size: 0.8rem; margin-bottom: 10px;">Since there are no mouse clicks here, use these straightforward keys to control everything:</p>
       
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.8rem; color: #aaa;">
         <div>
-          <p><span class="highlight-cyan">SPACE</span> : Play / Pause Toggle</p>
-          <p><span class="highlight-cyan">▲ / ▼</span> : Volume Master Up / Down</p>
-          <p><span class="highlight-cyan">N / P</span> : Skip Next / Previous Track</p>
+          <p><span class="highlight-cyan">SPACE</span> : Play / Pause song</p>
+          <p><span class="highlight-cyan">▲ / ▼</span> : Turn Volume Up / Down</p>
+          <p><span class="highlight-cyan">N / P</span> : Next / Previous track</p>
+          <p><span class="highlight-cyan">Y</span> : Stream from YouTube</p>
         </div>
         <div>
-          <p><span class="highlight-cyan">L</span> : Toggle Loop Sequences</p>
-          <p><span class="highlight-cyan">F / TAB</span> : File System Browser Overlay</p>
-          <p><span class="highlight-cyan">S / Q</span> : Stop Engine / Safe Exit</p>
+          <p><span class="highlight-cyan">L</span> : Turn Repeat (Loop) On/Off</p>
+          <p><span class="highlight-cyan">E</span> : Switch Equalizer styles</p>
+          <p><span class="highlight-cyan">F / TAB</span> : Browse your computer folders</p>
+          <p><span class="highlight-cyan">S / Q</span> : Stop track / Quit player</p>
         </div>
       </div>
     </div>
@@ -303,7 +304,7 @@
     const appInterface = document.getElementById('appInterface');
     const errorMsg = document.getElementById('errorMsg');
 
-    // Force focus onto command line input channel
+    // Always pull focus onto the keyboard prompt line
     document.addEventListener('click', () => {
       if (!terminalWelcome.classList.contains('hidden')) {
         terminalInput.focus();
@@ -319,7 +320,7 @@
           terminalInput.disabled = true;
           
           const loadingText = document.createElement('p');
-          loadingText.innerHTML = `<span style="color: var(--cyan-terminal);">Loading MASCII binary elements... Done. Initializing TUI Workspace.</span>`;
+          loadingText.innerHTML = `<span style="color: var(--cyan-terminal);">Loading interface boxes... Ready. Opening workspace.</span>`;
           terminalWelcome.appendChild(loadingText);
 
           setTimeout(() => {
