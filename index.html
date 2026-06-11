@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mascii</title>
+  <title>MASCII v1.1.0 - Kingston Terminal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -85,7 +85,7 @@
       caret-color: var(--green-terminal);
     }
 
-    /* FULLSCREEN PLAYER INTERFACE (Proporciones estrictas de core/ui.js) */
+    /* FULLSCREEN PLAYER INTERFACE (Separación limpia mediante Gap) */
     .terminal-fullscreen {
       width: 100%;
       height: 100%;
@@ -93,6 +93,8 @@
       grid-template-columns: 30% 70%; 
       grid-template-rows: 70% 30%;    
       background-color: #000000;
+      padding: 16px; /* Evita que las cajas toquen los extremos absolutos de la pantalla */
+      gap: 16px; /* Espacio de aislamiento entre las secciones de la cuadrícula */
       opacity: 0;
       transform: scale(0.99);
       transition: opacity 0.4s ease, transform 0.4s ease;
@@ -103,10 +105,9 @@
       transform: scale(1);
     }
 
-    /* COLLAPSED BORDERS LINKED TO BLESSED TUI STYLE */
+    /* INDEPENDENT PANELS */
     .tui-box {
       border: 1px solid var(--gray-border);
-      margin: -0.5px;
       position: relative;
       padding: 24px;
       background-color: #000000;
@@ -120,9 +121,9 @@
       position: absolute;
       top: 0;
       left: 14px;
-      transform: translateY(-50%); /* Hace que el texto reemplace exactamente la línea del borde */
-      background-color: var(--bg-color); /* Cubre la línea de abajo */
-      padding: 0 2px;
+      transform: translateY(-50%); 
+      background-color: var(--bg-color); 
+      padding: 0 4px;
       font-size: 0.8rem;
       font-weight: bold;
       letter-spacing: 0.5px;
@@ -154,13 +155,13 @@
     }
     .status-box .tui-label { color: var(--green-terminal); }
 
-    /* Envoltura inferior para mantener proporciones 60/40 de tu script */
+    /* Envoltura inferior adaptada con separación propia */
     .grid-footer-wrapper {
       grid-column: 1 / span 2;
       grid-row: 2;
       display: grid;
       grid-template-columns: 60% 40%;
-      margin: -0.5px;
+      gap: 16px; /* Espacio de aislamiento para la fila de abajo */
     }
 
     /* INNER GENERAL-PUBLIC LAYOUT */
@@ -211,6 +212,8 @@
         grid-template-columns: 1fr;
         grid-template-rows: repeat(4, auto);
         overflow-y: auto;
+        gap: 12px;
+        padding: 12px;
       }
       .grid-footer-wrapper {
         grid-template-columns: 1fr;
@@ -220,7 +223,6 @@
       }
       .tui-box {
         min-height: 250px;
-        margin: 5px 0;
       }
       .ascii-logo-small {
         font-size: 1.4vw;
