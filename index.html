@@ -85,7 +85,7 @@
       caret-color: var(--green-terminal);
     }
 
-    /* FULLSCREEN PLAYER INTERFACE (Separación limpia mediante Gap) */
+    /* FULLSCREEN PLAYER INTERFACE */
     .terminal-fullscreen {
       width: 100%;
       height: 100%;
@@ -93,8 +93,8 @@
       grid-template-columns: 30% 70%; 
       grid-template-rows: 70% 30%;    
       background-color: #000000;
-      padding: 16px; /* Evita que las cajas toquen los extremos absolutos de la pantalla */
-      gap: 16px; /* Espacio de aislamiento entre las secciones de la cuadrícula */
+      padding: 16px; 
+      gap: 16px; 
       opacity: 0;
       transform: scale(0.99);
       transition: opacity 0.4s ease, transform 0.4s ease;
@@ -113,22 +113,21 @@
       background-color: #000000;
       display: flex;
       flex-direction: column;
-      overflow: hidden; 
+      /* Eliminado overflow: hidden para que la etiqueta pise el borde limpiamente */
     }
 
-    /* POSICIONAMIENTO QUE CORTA LA LÍNEA EXACTAMENTE (Estilo Blessed Terminal) */
+    /* CORTE LIMPIO DE LÍNEA EXACTO (Estilo Blessed Terminal) */
     .tui-label {
       position: absolute;
-      top: 0;
-      left: 14px;
-      transform: translateY(-50%); 
-      background-color: var(--bg-color); 
-      padding: 0 4px;
+      top: -7px; /* Centrado perfecto sobre el borde de 1px */
+      left: 12px;
+      background-color: #000000 !important; /* Forzar fondo negro absoluto */
+      padding: 0 6px; /* Espaciado lateral para cortar la línea simétricamente */
       font-size: 0.8rem;
       font-weight: bold;
       letter-spacing: 0.5px;
       white-space: nowrap;
-      line-height: 1;
+      z-index: 10;
     }
 
     .album-box {
@@ -161,7 +160,7 @@
       grid-row: 2;
       display: grid;
       grid-template-columns: 60% 40%;
-      gap: 16px; /* Espacio de aislamiento para la fila de abajo */
+      gap: 16px; 
     }
 
     /* INNER GENERAL-PUBLIC LAYOUT */
@@ -223,6 +222,7 @@
       }
       .tui-box {
         min-height: 250px;
+        margin-bottom: 12px;
       }
       .ascii-logo-small {
         font-size: 1.4vw;
