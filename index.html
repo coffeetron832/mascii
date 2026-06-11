@@ -28,36 +28,62 @@
       background-color: var(--bg-color);
       color: var(--fg-color);
       font-family: 'JetBrains Mono', monospace;
-      padding: 40px 20px;
-      overflow-x: hidden;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
     }
 
-    header {
-      max-width: 1100px;
-      margin: 0 auto 40px auto;
-      border-bottom: 2px solid var(--fg-color);
-      padding-bottom: 20px;
+    .splash-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      text-align: center;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
     }
 
-    .brand-title {
-      font-size: 3.5rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: -1px;
-      line-height: 1;
+    .splash-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
 
-    .brand-subtitle {
-      font-size: 1rem;
+    .splash-art {
+      white-space: pre;
+      font-size: 0.85vw;
+      line-height: 1.2;
+      margin-bottom: 25px;
+    }
+
+    .stripe-green { background-color: var(--green-terminal); color: #000; }
+    .stripe-yellow { background-color: var(--yellow-terminal); color: #000; }
+
+    .splash-version {
+      font-size: 1.1rem;
       color: var(--yellow-terminal);
-      margin-top: 5px;
+      margin-bottom: 40px;
     }
 
-    .terminal-container {
-      max-width: 1100px;
-      margin: 0 auto;
+    .prompt-text {
+      font-size: 1.2rem;
+      color: var(--fg-color);
+      animation: blink 1.2s infinite;
+    }
+
+    .terminal-fullscreen {
+      width: 100%;
+      height: 100%;
       display: grid;
       grid-template-columns: 30% 70%;
+      grid-template-rows: 70% 30%;
       background-color: #000000;
     }
 
@@ -66,6 +92,7 @@
       position: relative;
       padding: 20px;
       background-color: #000000;
+      overflow: hidden;
     }
 
     .tui-label {
@@ -80,6 +107,7 @@
 
     .album-box {
       grid-column: 1;
+      grid-row: 1;
       border-color: var(--cyan-terminal);
       color: var(--cyan-terminal);
       display: flex;
@@ -87,41 +115,42 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      min-height: 320px;
     }
     .album-box .tui-label { color: var(--cyan-terminal); }
 
     .now-playing-box {
       grid-column: 2;
+      grid-row: 1;
       border-color: var(--green-terminal);
-      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 30px;
+      padding-left: 40px;
     }
     .now-playing-box .tui-label { color: var(--green-terminal); }
 
     .playlist-box {
-      grid-column: 1 / span 1;
+      grid-column: 1;
+      grid-row: 2;
       border-color: var(--yellow-terminal);
-      min-height: 180px;
     }
     .playlist-box .tui-label { color: var(--yellow-terminal); }
 
-    .bottom-layout {
-      grid-column: 1 / span 2;
-      display: grid;
-      grid-template-columns: 60% 40%;
-    }
-
     .status-box {
+      grid-column: 2;
+      grid-row: 2;
       border-color: var(--green-terminal);
-      min-height: 180px;
+      padding-top: 25px;
+      padding-left: 30px;
     }
     .status-box .tui-label { color: var(--green-terminal); }
 
     .ascii-cow {
       white-space: pre;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       line-height: 1.2;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       color: var(--fg-color);
     }
 
@@ -134,24 +163,27 @@
     .terminal-yellow { color: var(--yellow-terminal); }
 
     .progress-bar {
-      margin: 10px 0;
+      margin: 12px 0;
       letter-spacing: -1px;
+      font-size: 1.1rem;
     }
 
     .big-time-ascii {
       white-space: pre;
       font-size: 0.55rem;
       line-height: 1.1;
-      margin-top: 10px;
+      margin-top: 15px;
       color: var(--cyan-terminal);
     }
 
     .track-list {
       list-style: none;
       font-size: 0.85rem;
+      height: 100%;
+      overflow-y: auto;
     }
     .track-list li {
-      padding: 2px 5px;
+      padding: 4px 5px;
       color: #aaaaaa;
     }
     .track-list li.selected {
@@ -163,107 +195,57 @@
     .config-grid {
       display: grid;
       grid-template-columns: 1fr;
-      font-size: 0.8rem;
-      line-height: 1.4;
+      font-size: 0.85rem;
+      line-height: 1.5;
       color: #bbbbbb;
     }
 
-    .install-section {
-      max-width: 1100px;
-      margin: 40px auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid var(--gray-border);
-      padding-top: 30px;
-    }
-
-    .install-info p {
-      font-size: 1.1rem;
-      margin-bottom: 5px;
-    }
-
-    .command-box {
-      background-color: #111111;
-      border: 1px dashed var(--yellow-terminal);
-      padding: 15px 25px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .btn-copy {
-      background: none;
-      border: 1px solid var(--fg-color);
-      color: var(--fg-color);
-      padding: 5px 10px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      transition: all 0.2s ease;
-    }
-    .btn-copy:hover {
-      background-color: var(--fg-color);
-      color: var(--bg-color);
-    }
-
-    .about-section {
-      max-width: 1100px;
-      margin: 60px auto 0 auto;
-      border-top: 2px solid var(--fg-color);
-      padding-top: 30px;
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-    }
-
-    .about-grid p {
-      font-size: 1.05rem;
-      line-height: 1.6;
-      color: #cccccc;
-    }
-
-    .feature-title {
-      font-weight: bold;
-      color: var(--cyan-terminal);
-      margin-bottom: 5px;
-    }
-
-    .footer-links {
-      margin-top: 40px;
-      display: flex;
-      gap: 20px;
-    }
-
-    .footer-links a {
-      color: var(--yellow-terminal);
-      text-decoration: none;
+    .shortcut-col {
+      float: right; 
+      color: white; 
       font-weight: bold;
     }
-    .footer-links a:hover {
-      text-decoration: underline;
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
 
     @media (max-width: 800px) {
-      .terminal-container { display: flex; flex-direction: column; }
-      .bottom-layout { display: flex; flex-direction: column; }
-      .about-grid { grid-template-columns: 1fr; }
-      .tui-box { min-height: auto !important; }
+      .terminal-fullscreen {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, auto);
+        overflow-y: auto;
+      }
+      .album-box, .now-playing-box, .playlist-box, .status-box {
+        grid-column: 1 / span 1;
+        grid-row: auto;
+        min-height: 250px;
+      }
+      .splash-art {
+        font-size: 1.8vw;
+      }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1 class="brand-title">MASCII Player</h1>
-    <p class="brand-subtitle">v1.1.0 "Kingston" - Terminal-based Audio System</p>
-  </header>
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-art"><span class="stripe-green"> ███▄ ▄███▓ ▄▄▄          ██████  ▄████▄   ██▓ ██▓ </span>
+<span class="stripe-yellow"> ▓██▒▀█▀ ██▒▒████▄      ▒██    ▒ ▒██▀ ▀█  ▓██▒▓██▒ </span>
+<span class="stripe-green"> ▓██    ▓██░▒██  ▀█▄    ░ ▓██▄   ▒▓█    ▄ ▒██▒▒██▒ </span>
+<span class="stripe-yellow"> ▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒▒▓▓▄ ▄██▒░██░░██░ </span>
+<span class="stripe-green"> ▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒▒ ▓███▀ ░░██░░██░ </span>
+<span class="stripe-yellow"> ░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░░▓  ░▓   </span>
+<span class="stripe-green"> ░  ░      ░  ▒   ▒▒ ░░ ░▒  ░ ░  ░  ▒    ▒ ░ ▒ ░ </span>
+<span class="stripe-yellow"> ░      ░      ░   ▒    ░  ░  ░  ░          ▒ ░ ▒ ░ </span>
+<span class="stripe-green">        ░          ░  ░        ░  ░ ░        ░   ░  </span>
+<span class="stripe-yellow">                                      ░             </span></div>
+    <div class="splash-version">v1.1.0 "Kingston"</div>
+    <div class="prompt-text">Press ENTER to launch MASCII Player</div>
+  </div>
 
-  <section class="terminal-container">
+  <section class="terminal-fullscreen">
     
     <div class="tui-box album-box">
       <div class="tui-label"> [ ALBUM ART ] </div>
@@ -281,15 +263,15 @@
 
     <div class="tui-box now-playing-box">
       <div class="tui-label"> [ NOW PLAYING ] </div>
-      <p class="terminal-bold">CURRENT TRACK</p>
-      <p style="margin-left: 15px; margin-bottom: 15px;">Welcome to MASCII v1.1.0 Kingston</p>
+      <p class="terminal-bold">🎵 CURRENT TRACK</p>
+      <p style="margin-left: 15px; margin-bottom: 20px;">Welcome to MASCII v1.1.0 Kingston</p>
       
-      <p class="terminal-bold">PROGRESS (<span class="terminal-yellow">45%</span>)</p>
-      <p class="progress-bar" style="margin-left: 15px; margin-bottom: 15px;">
+      <p class="terminal-bold">📊 PROGRESS (<span class="terminal-yellow">45%</span>)</p>
+      <p class="progress-bar" style="margin-left: 15px; margin-bottom: 20px;">
         <span class="terminal-green">███████████████████</span><span style="color: #333;">░░░░░░░░░░░░░░░░░░░░░░░</span>
       </p>
 
-      <p class="terminal-bold">TIME ELAPSED (MIN:SEC)</p>
+      <p class="terminal-bold">⏱️ TIME ELAPSED (MIN:SEC)</p>
       <div class="big-time-ascii">
  ▄███▄   ▄█    ▄   ▄███▄   █   █ 
  █▀   █   █    ▀   █▀   █  █   █ 
@@ -298,88 +280,41 @@
  ▀███▀  █████  ▀   █████       █ </div>
     </div>
 
-    <div class="bottom-layout">
-      
-      <div class="tui-box playlist-box">
-        <div class="tui-label"> [ TRACKLIST ] </div>
-        <ul class="track-list">
-          <li class="selected">▶ * 01. Queen - Bohemian Rhapsody.mp3</li>
-          <li>    02. Daft Punk - One More Time.flac</li>
-          <li>    03. Michael Jackson - Billie Jean.wav</li>
-          <li>    04. Bob Marley - Redemption Song.ogg</li>
-          <li>    05. Beethoven - Symphony No. 9 (Ode to Joy).m4a</li>
-          <li>    06. Soda Stereo - De Musica Ligera.aac</li>
-        </ul>
-      </div>
-
-      <div class="tui-box status-box">
-        <div class="tui-label"> [ AUDIO CONFIG & CONTROLS ] </div>
-        <div class="config-grid">
-          <div><span class="terminal-bold" style="color:white;">STATE</span><span style="float:right; color:white; font-weight:bold;">KEYBOARD SHORTCUTS</span></div>
-          <div>• Volume:    [80%]           ▲/▼ o +/- : Vol Up/Down</div>
-          <div>• Loop:      [DISABLED]           L         : Toggle Loop</div>
-          <div>• Shuffle:   [OFF]              Z         : Toggle Shuffle</div>
-          <div>• Equalizer: <span class="terminal-green">[   ROCK]</span>           E         : Cycle EQ Presets</div>
-          <div style="color: #666; margin-top: 5px;">SPACE: Play/Pause | N/P: Next/Prev | F: Browse</div>
-        </div>
-      </div>
-
+    <div class="tui-box playlist-box">
+      <div class="tui-label"> [ TRACKLIST ] </div>
+      <ul class="track-list">
+        <li class="selected">▶ * 01. Queen - Bohemian Rhapsody.mp3</li>
+        <li>    02. Daft Punk - One More Time.flac</li>
+        <li>    03. Michael Jackson - Billie Jean.wav</li>
+        <li>    04. Bob Marley - Redemption Song.ogg</li>
+        <li>    05. Beethoven - Symphony No. 9 (Ode to Joy).m4a</li>
+        <li>    06. Soda Stereo - De Musica Ligera.aac</li>
+      </ul>
     </div>
-  </section>
 
-  <section class="install-section">
-    <div class="install-info">
-      <p>Ready to bring your music into the command line?</p>
-      <p style="color: #888; font-size: 0.95rem;">Install the package globally via npm.</p>
-    </div>
-    <div class="command-box">
-      <span style="color: var(--cyan-terminal);">$</span>
-      <span id="commandText" style="color: var(--yellow-terminal); font-weight: bold;">npm install -g mascii</span>
-      <button class="btn-copy" onclick="copyCommand()">COPY</button>
-    </div>
-  </section>
-
-  <section class="about-section">
-    <div class="about-grid">
-      <div>
-        <p class="feature-title">Keep Your Focus</p>
-        <p style="margin-bottom: 20px;">
-          Listen to your local music library directly from your workspace. No window switching, no web browsers eating up your RAM, and absolutely zero distractions while you work.
-        </p>
-        
-        <p class="feature-title">Stream Instantly</p>
-        <p>
-          Just press the <span class="terminal-yellow">'y'</span> key to quickly load online audio streams and YouTube content right into the app, without leaving the terminal environment.
-        </p>
-      </div>
-      <div>
-        <p class="feature-title">Save Your Memory</p>
-        <p style="margin-bottom: 20px;">
-          Ditch the heavy desktop music applications that lag your workspace. MASCII uses almost nothing, giving you fluid background playback while keeping your system fast.
-        </p>
-
-        <p class="feature-title">Total Keyboard Control</p>
-        <p>
-          Change tracks, pause, adjust the volume, and instantly swap through built-in equalizer music presets using fast, easy-to-remember shortcuts.
-        </p>
-        
-        <div class="footer-links">
-          <a href="https://github.com/coffeetron832/mascii" target="_blank">View on GitHub</a>
-          <a href="https://www.asciiart.eu/art/495363fc8e89c778" target="_blank" style="color: #666;">Mascot Source</a>
-        </div>
+    <div class="tui-box status-box">
+      <div class="tui-label"> [ AUDIO CONFIG & CONTROLS ] </div>
+      <div class="config-grid">
+        <div><span class="terminal-bold" style="color:white;">STATE</span><span class="shortcut-col">KEYBOARD SHORTCUTS</span></div>
+        <div>• Volume:    [80%]           ▲/▼ o +/- : Vol Up/Down</div>
+        <div>• Loop:      [DISABLED]           L         : Toggle Loop</div>
+        <div>• Shuffle:   [OFF]              Z         : Toggle Shuffle</div>
+        <div>• Equalizer: <span class="terminal-green">[   ROCK]</span>           E         : Cycle EQ Presets</div>
+        <div style="color: #666; margin-top: 8px;">SPACE: Play/Pause | N/P: Next/Prev | F: Browse Files | S/Q: Quit</div>
       </div>
     </div>
+
   </section>
 
   <script>
-    function copyCommand() {
-      const command = document.getElementById('commandText').innerText;
-      navigator.clipboard.writeText(command).then(() => {
-        const btn = document.querySelector('.btn-copy');
-        btn.innerText = 'COPIED!';
-        setTimeout(() => { btn.innerText = 'COPY'; }, 2000);
-      });
-    }
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        const splash = document.getElementById('splashScreen');
+        if (!splash.classList.contains('hidden')) {
+          splash.classList.add('hidden');
+        }
+      }
+    });
   </script>
 </body>
 </html>
