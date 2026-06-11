@@ -56,8 +56,6 @@
     }
 
     /* --- INTERFAZ SIMULADA DE TUI (Terminal User Interface) --- */
-    /* Mapea la distribución exacta de porcentajes de core/ui.js:
-       Top: 70% / 30% split, Left/Right layout */
     .terminal-container {
       max-width: 1100px;
       margin: 0 auto;
@@ -67,7 +65,6 @@
       background-color: #000000;
     }
 
-    /* Caja base emulando los bordes nativos de blessed */
     .tui-box {
       border: 1px solid var(--gray-border);
       position: relative;
@@ -75,7 +72,6 @@
       background-color: #000000;
     }
 
-    /* Etiquetas internas que imitan el 'label' de blessed en los bordes */
     .tui-label {
       position: absolute;
       top: -10px;
@@ -86,7 +82,7 @@
       font-weight: bold;
     }
 
-    /* --- PANELES SUPERIORES (height: 70%) --- */
+    /* --- PANELES SUPERIORES --- */
     .album-box {
       grid-column: 1;
       border-color: var(--cyan-terminal);
@@ -107,7 +103,7 @@
     }
     .now-playing-box .tui-label { color: var(--green-terminal); }
 
-    /* --- PANELES INFERIORES (height: 30%) --- */
+    /* --- PANELES INFERIORES --- */
     .playlist-box {
       grid-column: 1 / span 1;
       border-color: var(--yellow-terminal);
@@ -115,7 +111,6 @@
     }
     .playlist-box .tui-label { color: var(--yellow-terminal); }
 
-    /* En core/ui.js, playlist es 60% y status es 40%, ajustamos las columnas de la base inferior */
     .bottom-layout {
       grid-column: 1 / span 2;
       display: grid;
@@ -128,7 +123,7 @@
     }
     .status-box .tui-label { color: var(--green-terminal); }
 
-    /* --- CONTENIDO INTERNO DE LOS BOXES --- */
+    /* --- CONTENIDO INTERNO --- */
     .ascii-cow {
       white-space: pre;
       font-size: 0.9rem;
@@ -150,7 +145,6 @@
       letter-spacing: -1px;
     }
 
-    /* Simulación de la tipografía gigante para el tiempo */
     .big-time-ascii {
       white-space: pre;
       font-size: 0.55rem;
@@ -159,7 +153,6 @@
       color: var(--cyan-terminal);
     }
 
-    /* Simulación de la lista interactiva con elemento seleccionado */
     .track-list {
       list-style: none;
       font-size: 0.85rem;
@@ -182,7 +175,7 @@
       color: #bbbbbb;
     }
 
-    /* --- SECCIÓN DE INSTALACIÓN Y BOTÓN --- */
+    /* --- SECCIÓN DE INSTALACIÓN --- */
     .install-section {
       max-width: 1100px;
       margin: 40px auto;
@@ -273,7 +266,7 @@
 
   <header>
     <h1 class="brand-title">MASCII Player</h1>
-    <p class="brand-subtitle">v1.1.0 "Kingston" 🇯🇲 — Terminal-based Audio System</p>
+    <p class="brand-subtitle">v1.1.0 "Kingston" - Terminal-based Audio System</p>
   </header>
 
   <section class="terminal-container">
@@ -294,15 +287,15 @@
 
     <div class="tui-box now-playing-box">
       <div class="tui-label"> [ NOW PLAYING ] </div>
-      <p class="terminal-bold">🎵 CURRENT TRACK</p>
+      <p class="terminal-bold">CURRENT TRACK</p>
       <p style="margin-left: 15px; margin-bottom: 15px;">Welcome to MASCII v1.1.0 Kingston</p>
       
-      <p class="terminal-bold">📊 PROGRESS (<span class="terminal-yellow">45%</span>)</p>
+      <p class="terminal-bold">PROGRESS (<span class="terminal-yellow">45%</span>)</p>
       <p class="progress-bar" style="margin-left: 15px; margin-bottom: 15px;">
         <span class="terminal-green">███████████████████</span><span style="color: #333;">░░░░░░░░░░░░░░░░░░░░░░░</span>
       </p>
 
-      <p class="terminal-bold">⏱️ TIME ELAPSED (MIN:SEC)</p>
+      <p class="terminal-bold">TIME ELAPSED (MIN:SEC)</p>
       <div class="big-time-ascii">
  ▄███▄   ▄█    ▄   ▄███▄   █   █ 
  █▀   █   █    ▀   █▀   █  █   █ 
@@ -314,16 +307,16 @@
     <div class="bottom-layout">
       
       <div class="tui-box playlist-box">
-  <div class="tui-label"> [ TRACKLIST ] </div>
-  <ul class="track-list">
-    <li class="selected">▶ * 01. Queen - Bohemian Rhapsody.mp3</li>
-    <li>    02. Daft Punk - One More Time.flac</li>
-    <li>    03. Michael Jackson - Billie Jean.wav</li>
-    <li>    04. Bob Marley - Redemption Song.ogg</li>
-    <li>    05. Beethoven - Symphony No. 9 (Ode to Joy).m4a</li>
-    <li>    06. Soda Stereo - De Musica Ligera.aac</li>
-  </ul>
-</div>
+        <div class="tui-label"> [ TRACKLIST ] </div>
+        <ul class="track-list">
+          <li class="selected">▶ * 01. Queen - Bohemian Rhapsody.mp3</li>
+          <li>    02. Daft Punk - One More Time.flac</li>
+          <li>    03. Michael Jackson - Billie Jean.wav</li>
+          <li>    04. Bob Marley - Redemption Song.ogg</li>
+          <li>    05. Beethoven - Symphony No. 9 (Ode to Joy).m4a</li>
+          <li>    06. Soda Stereo - De Musica Ligera.aac</li>
+        </ul>
+      </div>
 
       <div class="tui-box status-box">
         <div class="tui-label"> [ AUDIO CONFIG & CONTROLS ] </div>
@@ -332,7 +325,7 @@
           <div>• Volume:    [80%]           ▲/▼ o +/- : Vol Up/Down</div>
           <div>• Loop:      [DISABLED]           L         : Toggle Loop</div>
           <div>• Shuffle:   [OFF]              Z         : Toggle Shuffle</div>
-          <div>• Equalizer: <span class="terminal-green">[   ROCK]</span>          E         : Cycle EQ Presets</div>
+          <div>• Equalizer: <span class="terminal-green">[   ROCK]</span>           E         : Cycle EQ Presets</div>
           <div style="color: #666; margin-top: 5px;">SPACE: Play/Pause | N/P: Next/Prev | F: Browse</div>
         </div>
       </div>
@@ -371,8 +364,8 @@
         </p>
         
         <div class="footer-links">
-          <a href="https://github.com/coffeetron832/mascii" target="_blank">➔ View on GitHub</a>
-          <a href="https://www.asciiart.eu/art/495363fc8e89c778" target="_blank" style="color: #666;">➔ Mascot Source</a>
+          <a href="https://github.com/coffeetron832/mascii" target="_blank">View on GitHub</a>
+          <a href="https://www.asciiart.eu/art/495363fc8e89c778" target="_blank" style="color: #666;">Mascot Source</a>
         </div>
       </div>
     </div>
