@@ -85,15 +85,15 @@
       caret-color: var(--green-terminal);
     }
 
-    /* FULLSCREEN PLAYER INTERFACE (Proporciones y cálculo de altura optimizados) */
+    /* FULLSCREEN PLAYER INTERFACE */
     .terminal-fullscreen {
       width: 100%;
-      height: calc(100vh - 32px); /* Ajuste milimétrico restando el padding superior/inferior */
+      height: calc(100vh - 32px); 
       display: grid;
       grid-template-columns: 30% 70%; 
-      grid-template-rows: 65% 35%; /* Incrementado a 35% para dar espacio completo al texto y bordes inferiores */   
+      grid-template-rows: 65% 35%;    
       background-color: #000000;
-      margin: 16px; /* Margen uniforme exterior */
+      margin: 16px; 
       gap: 16px; 
       opacity: 0;
       transform: scale(0.99);
@@ -200,9 +200,9 @@
     .ascii-logo-small {
       white-space: pre;
       font-size: 0.52vw;
-      line-height: 1.1;
+      line-height: 1.2;
       color: var(--yellow-terminal);
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     @media (max-width: 950px) {
@@ -249,12 +249,16 @@
     <div class="tui-box album-box">
       <div class="tui-label"> [ ALBUM ART ] </div>
       <div class="ascii-logo-small">
- ███▄ ▄███▓ ▄▄▄          ██████ 
-▓██▒▀█▀ ██▒▒████▄      ▒██    ▒ 
-▓██    ▓██░▒██  ▀█▄    ░ ▓██▄   
-▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒
-▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒
-░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░</div>
+███▄ ▄███▓ ▄▄▄        ██████  ▄████▄   ██▓ ██▓
+▓██▒▀█▀ ██▒▒████▄    ▒██    ▒ ▒██▀ ▀█  ▓██▒▓██▒
+▓██    ▓██░▒██  ▀█▄  ░ ▓██▄   ▒██    ▄ ▒██▒▒██▒
+▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒▒██▄▄▄▄██░██░░██░
+▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒▒ ▓████▀ ░██░░██░
+░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░ ▒▒ ▓  ░░▓  ░▓  
+░  ░      ░  ▒   ▒▒ ░░ ░▒  ░ ░  ░  ▒    ▒ ░ ▒ ░
+░      ░     ░   ▒   ░  ░  ░  ░          ▒ ░ ▒ ░
+       ░         ░  ░      ░  ░ ░        ░   ░  
+                              ░                 </div>
       <div class="info-title highlight-cyan">What is MASCII?</div>
       <div class="info-divider"></div>
       <p class="info-text">MASCII is a simple, lightweight music player that runs inside a retro text terminal. It is designed to be controlled entirely with your keyboard using straight lines and clean text shapes.</p>
