@@ -85,15 +85,15 @@
       caret-color: var(--green-terminal);
     }
 
-    /* FULLSCREEN PLAYER INTERFACE */
+    /* FULLSCREEN PLAYER INTERFACE (Proporciones y cálculo de altura optimizados) */
     .terminal-fullscreen {
       width: 100%;
-      height: 100%;
+      height: calc(100vh - 32px); /* Ajuste milimétrico restando el padding superior/inferior */
       display: grid;
       grid-template-columns: 30% 70%; 
-      grid-template-rows: 70% 30%;    
+      grid-template-rows: 65% 35%; /* Incrementado a 35% para dar espacio completo al texto y bordes inferiores */   
       background-color: #000000;
-      padding: 16px; 
+      margin: 16px; /* Margen uniforme exterior */
       gap: 16px; 
       opacity: 0;
       transform: scale(0.99);
@@ -113,16 +113,15 @@
       background-color: #000000;
       display: flex;
       flex-direction: column;
-      /* Eliminado overflow: hidden para que la etiqueta pise el borde limpiamente */
     }
 
     /* CORTE LIMPIO DE LÍNEA EXACTO (Estilo Blessed Terminal) */
     .tui-label {
       position: absolute;
-      top: -7px; /* Centrado perfecto sobre el borde de 1px */
+      top: -7px; 
       left: 12px;
-      background-color: #000000 !important; /* Forzar fondo negro absoluto */
-      padding: 0 6px; /* Espaciado lateral para cortar la línea simétricamente */
+      background-color: #000000 !important; 
+      padding: 0 6px; 
       font-size: 0.8rem;
       font-weight: bold;
       letter-spacing: 0.5px;
@@ -211,8 +210,9 @@
         grid-template-columns: 1fr;
         grid-template-rows: repeat(4, auto);
         overflow-y: auto;
+        height: auto;
+        margin: 12px;
         gap: 12px;
-        padding: 12px;
       }
       .grid-footer-wrapper {
         grid-template-columns: 1fr;
