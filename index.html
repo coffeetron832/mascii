@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mascii</title>
+  <title>mascii, music that stays inside your workflow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -35,7 +35,6 @@
       position: relative;
     }
 
-    /* TERMINAL WELCOME INTERFACE */
     .terminal-welcome {
       position: absolute;
       top: 0;
@@ -44,13 +43,14 @@
       height: 100%;
       background-color: var(--bg-color);
       z-index: 200;
-      padding: 30px;
+      padding: 40px 20px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      align-items: flex-start;
-      font-size: 1rem;
+      justify-content: center; 
+      align-items: center;     
+      font-size: 0.95rem;
       line-height: 1.6;
+      overflow-y: auto;
       transition: opacity 0.3s ease, visibility 0.3s ease;
     }
 
@@ -60,17 +60,128 @@
       pointer-events: none;
     }
 
+    .welcome-container {
+      width: 100%;
+      max-width: 550px; 
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; 
+    }
+
+    .ascii-banner {
+      white-space: pre;
+      font-size: 0.75vw;
+      line-height: 1.2;
+      color: var(--yellow-terminal);
+      margin-bottom: 16px;
+      align-self: center; 
+    }
+
+    .slogan-text {
+      color: var(--dim-text);
+      font-weight: 500;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+
+    .repo-badges {
+      font-size: 0.8rem;
+      color: #666666;
+      margin-bottom: 24px;
+    }
+
+    .repo-badges span {
+      margin-right: 15px;
+    }
+
+    .landing-desc {
+      width: 100%;
+      color: #cccccc;
+      margin-bottom: 24px;
+    }
+
+    .install-zone {
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .install-title {
+      font-weight: bold;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .install-block {
+      background-color: #111111;
+      border: 1px solid #222222;
+      padding: 10px 16px;
+      color: var(--green-terminal);
+      display: inline-block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .command-zone {
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .command-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      margin-bottom: 6px;
+    }
+
+    .cmd-name {
+      color: var(--cyan-terminal);
+      font-weight: bold;
+    }
+
+    .cmd-desc {
+      color: #aaaaaa;
+    }
+
+    .terminal-hr {
+      width: 100%;
+      border: none;
+      height: 1px;
+      background-color: #333333;
+      margin-bottom: 20px;
+    }
+
+    .terminal-history {
+      width: 100%;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .history-block {
+      margin-bottom: 15px;
+    }
+
+    .history-cmd-line {
+      display: flex;
+      color: var(--green-terminal);
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .history-cmd-line .cmd-text {
+      color: var(--fg-color);
+      margin-left: 12px;
+      font-weight: normal;
+    }
+
     .prompt-line {
       display: flex;
       align-items: center;
       width: 100%;
-      margin-top: 15px;
     }
 
     .prompt-user {
       color: var(--green-terminal);
       font-weight: bold;
-      margin-right: 10px;
+      margin-right: 12px;
       white-space: nowrap;
     }
 
@@ -85,15 +196,14 @@
       caret-color: var(--green-terminal);
     }
 
-    /* FULLSCREEN PLAYER INTERFACE */
     .terminal-fullscreen {
-      width: 100%;
+      width: calc(100% - 32px);
       height: calc(100vh - 32px); 
       display: grid;
       grid-template-columns: 30% 70%; 
-      grid-template-rows: 65% 35%;    
+      grid-template-rows: 1.2fr 1fr; 
       background-color: #000000;
-      margin: 16px; 
+      margin: 16px auto; 
       gap: 16px; 
       opacity: 0;
       transform: scale(0.99);
@@ -112,11 +222,12 @@
       background-color: #000000;
       display: flex;
       flex-direction: column;
+      overflow: visible; 
     }
 
     .tui-label {
       position: absolute;
-      top: -7px; 
+      top: -9px; 
       left: 12px;
       background-color: #000000 !important; 
       padding: 0 6px; 
@@ -127,71 +238,34 @@
       z-index: 10;
     }
 
-    .album-box {
-      grid-column: 1;
-      grid-row: 1;
-      border-color: var(--cyan-terminal);
-    }
+    .album-box { grid-column: 1; grid-row: 1; border-color: var(--cyan-terminal); }
     .album-box .tui-label { color: var(--cyan-terminal); }
 
-    .now-playing-box {
-      grid-column: 2;
-      grid-row: 1;
-      border-color: var(--green-terminal);
-    }
+    .now-playing-box { grid-column: 2; grid-row: 1; border-color: var(--green-terminal); }
     .now-playing-box .tui-label { color: var(--green-terminal); }
 
-    .playlist-box {
-      border-color: var(--yellow-terminal);
-    }
+    .playlist-box { border-color: var(--yellow-terminal); }
     .playlist-box .tui-label { color: var(--yellow-terminal); }
 
-    .status-box {
-      border-color: var(--green-terminal); 
-    }
+    .status-box { border-color: var(--green-terminal); }
     .status-box .tui-label { color: var(--green-terminal); }
 
     .grid-footer-wrapper {
       grid-column: 1 / span 2;
       grid-row: 2;
       display: grid;
-      grid-template-columns: 60% 40%;
-      gap: 16px; 
+      grid-template-columns: 6fr 4fr; 
+      gap: 16px;
     }
 
-    .info-title {
-      font-size: 0.95rem;
-      font-weight: bold;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-    
-    .info-divider {
-      width: 100%;
-      height: 1px;
-      background-color: #222222;
-      margin-bottom: 12px;
-    }
-
-    .info-text {
-      font-size: 0.8rem;
-      line-height: 1.4;
-      color: #cccccc;
-      margin-bottom: 10px;
-    }
-
+    .info-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
+    .info-divider { width: 100%; height: 1px; background-color: #222222; margin-bottom: 12px; }
+    .info-text { font-size: 0.8rem; line-height: 1.4; color: #cccccc; margin-bottom: 10px; }
     .highlight-yellow { color: var(--yellow-terminal); font-weight: bold; }
     .highlight-cyan { color: var(--cyan-terminal); font-weight: bold; }
     .highlight-green { color: var(--green-terminal); font-weight: bold; }
-
-    .spec-list {
-      list-style: none;
-      font-size: 0.78rem;
-    }
-    .spec-list li {
-      margin-bottom: 4px;
-      color: #aaaaaa;
-    }
+    .spec-list { list-style: none; font-size: 0.78rem; }
+    .spec-list li { margin-bottom: 4px; color: #aaaaaa; }
 
     .ascii-logo-small {
       white-space: pre;
@@ -207,39 +281,67 @@
         grid-template-rows: repeat(4, auto);
         overflow-y: auto;
         height: auto;
+        width: auto;
         margin: 12px;
         gap: 12px;
       }
       .grid-footer-wrapper {
         grid-template-columns: 1fr;
-        grid-row: auto;
-        grid-column: auto;
         display: contents;
       }
-      .tui-box {
-        min-height: 250px;
-        margin-bottom: 12px;
-      }
-      .ascii-logo-small {
-        font-size: 1.4vw;
-      }
+      .tui-box { min-height: 250px; margin-bottom: 12px; }
+      .ascii-banner { font-size: 2.2vw; } 
+      .ascii-logo-small { font-size: 1.4vw; }
     }
   </style>
 </head>
 <body>
 
   <div class="terminal-welcome" id="terminalWelcome">
-    <p>Welcome to the retro music player app. Type <span class="highlight-yellow">mascii</span> and press Enter to start the music player layout.</p>
-    
-    <div class="prompt-line">
-      <span class="prompt-user">guest@mascii:~ $</span>
-      <input type="text" class="terminal-input" id="terminalInput" autofocus autocomplete="off" spellcheck="false">
+    <div class="welcome-container">
+      <div class="ascii-banner">
+ ███▄ ▄███▓ ▄▄▄        ██████  ▄████▄   ██▓ ██▓
+▓██▒▀█▀ ██▒▒████▄    ▒██    ▒ ▒██▀ ▀█  ▓██▒▓██▒
+▓██    ▓██░▒██  ▀█▄  ░ ▓██▄   ▒▓█    ▄ ▒██▒▒██▒
+▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒▒▓▓▄ ▄██▒░██░░██░
+▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒▒ ▓███▀ ░░██░░██░
+░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░░▓  ░▓  
+░  ░      ░  ▒   ▒▒ ░░ ░▒  ░ ░  ░  ▒    ▒ ░ ▒ ░
+░      ░     ░   ▒   ░  ░  ░  ░         ▒ ░ ▒ ░
+       ░         ░  ░      ░  ░ ░       ░   ░  
+                              ░                </div>
+
+      <p class="slogan-text">Music that stays inside your workflow.</p>
+      <div class="repo-badges">
+        <span>[ Release: <span style="color: var(--cyan-terminal);">v1.1.0-Kingston</span> ]</span>
+        <span>[ License: <span style="color: #aaa;">MIT</span> ]</span>
+      </div>
+
+      <p class="landing-desc">mascii isn’t just a music player, it’s a philosophy. It transforms your terminal into a sleek, high-performance audio station that respects your workflow.</p>
+      
+      <div class="install-zone">
+        <p class="install-title">Installation:</p>
+        <div class="install-block">$ npm install -g mascii</div>
+      </div>
+
+      <p style="margin-bottom: 8px; font-weight: bold; color: white;">Available commands:</p>
+      <div class="command-zone">
+        <div class="command-row"><span class="cmd-name">mascii</span><span class="cmd-desc">Launch audio player dashboard</span></div>
+        <div class="command-row"><span class="cmd-name">updates</span><span class="cmd-desc">Read latest release logs</span></div>
+      </div>
+
+      <hr class="terminal-hr">
+      
+      <div id="terminalHistory" class="terminal-history"></div>
+      
+      <div class="prompt-line">
+        <span class="prompt-user">$</span>
+        <input type="text" class="terminal-input" id="terminalInput" autofocus autocomplete="off" spellcheck="false">
+      </div>
     </div>
-    <p id="errorMsg" style="color: red; font-size: 0.85rem; margin-top: 10px; display: none;">Command not found. Please type "mascii" to start the player.</p>
   </div>
 
   <section class="terminal-fullscreen" id="appInterface">
-    
     <div class="tui-box album-box">
       <div class="tui-label"> [ ALBUM ART ] </div>
       <div class="ascii-logo-small">
@@ -253,9 +355,6 @@
 ░      ░     ░   ▒   ░  ░  ░  ░          ▒ ░ ▒ ░
        ░         ░  ░      ░  ░ ░        ░   ░  
                               ░                 </div>
-      <div class="info-title highlight-cyan">What is MASCII?</div>
-      <div class="info-divider"></div>
-      <p class="info-text">MASCII is a simple, lightweight music player that runs inside a retro text terminal. It is designed to be controlled entirely with your keyboard using straight lines and clean text shapes.</p>
       <ul class="spec-list">
         <li>• <span class="highlight-yellow">Current Version:</span> v1.1.0 Kingston</li>
       </ul>
@@ -266,7 +365,6 @@
       <div class="info-title highlight-green">Main Features & Functions</div>
       <div class="info-divider"></div>
       <p class="info-text">This app plays your favorite songs smoothly without using heavy graphics or distracting layouts, keeping your computer running light and fast.</p>
-      
       <p class="info-text" style="font-weight: bold; color: white; margin-bottom: 5px;">Key Highlights:</p>
       <ul class="spec-list" style="margin-left: 10px; margin-bottom: 12px;">
         <li><span class="highlight-green">✓ YouTube Audio Streaming:</span> You can use special keys to look up and stream music directly from YouTube into the app.</li>
@@ -276,7 +374,6 @@
     </div>
 
     <div class="grid-footer-wrapper">
-      
       <div class="tui-box playlist-box">
         <div class="tui-label"> [ TRACKLIST ] </div>
         <div class="info-title highlight-yellow">File Compatibility</div>
@@ -294,7 +391,6 @@
         <div class="info-title" style="color: white;">Keyboard Control Guide</div>
         <div class="info-divider"></div>
         <p class="info-text" style="font-size: 0.78rem; margin-bottom: 8px;">Use these keys to manage playback execution inside the dashboard:</p>
-        
         <div style="display: grid; grid-template-columns: 1fr; gap: 4px; font-size: 0.75rem; color: #aaa;">
           <p><span class="highlight-cyan">SPACE</span> : Play / Pause song</p>
           <p><span class="highlight-cyan">▲ / ▼</span> : Turn Volume Up / Down</p>
@@ -304,16 +400,14 @@
           <p><span class="highlight-cyan">S / Q</span> : Stop track / Quit player</p>
         </div>
       </div>
-
     </div>
-
   </section>
 
   <script>
     const terminalInput = document.getElementById('terminalInput');
     const terminalWelcome = document.getElementById('terminalWelcome');
     const appInterface = document.getElementById('appInterface');
-    const errorMsg = document.getElementById('errorMsg');
+    const terminalHistory = document.getElementById('terminalHistory');
 
     document.addEventListener('click', () => {
       if (!terminalWelcome.classList.contains('hidden')) {
@@ -321,25 +415,44 @@
       }
     });
 
+    function appendToHistory(command, responseHTML) {
+      const block = document.createElement('div');
+      block.className = 'history-block';
+      block.innerHTML = `
+        <div class="history-cmd-line"><span>$</span><span class="cmd-text">${command}</span></div>
+        <div class="history-response">${responseHTML}</div>
+      `;
+      terminalHistory.appendChild(block);
+      terminalWelcome.scrollTop = terminalWelcome.scrollHeight;
+    }
+
     terminalInput.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
-        const command = terminalInput.value.trim().toLowerCase();
+        const command = terminalInput.value.trim();
+        const cleanCmd = command.toLowerCase();
         
-        if (command === 'mascii') {
-          errorMsg.style.display = 'none';
-          terminalInput.disabled = true;
-          
-          const loadingText = document.createElement('p');
-          loadingText.innerHTML = `<span style="color: var(--cyan-terminal);">Loading interface boxes... Ready. Opening workspace.</span>`;
-          terminalWelcome.appendChild(loadingText);
+        if (cleanCmd === '') return;
 
+        if (cleanCmd === 'mascii') {
+          terminalInput.disabled = true;
+          appendToHistory(command, `<p style="color: var(--cyan-terminal); margin-top: 4px;">> Initializing binary pipeline... OK. Loading workspace panels.</p>`);
+          
           setTimeout(() => {
             terminalWelcome.classList.add('hidden');
             appInterface.classList.add('visible');
-          }, 600);
+          }, 700);
 
-        } else if (command !== '') {
-          errorMsg.style.display = 'block';
+        } else if (cleanCmd === 'updates') {
+          const updatesContent = `
+            <p style="color: var(--green-terminal); font-weight:bold; margin-bottom: 2px;">RELEASE NOTES - Milestone v1.1.0 Kingston:</p>
+            <p style="color: #aaa;">• Better folder browsing: Looking through your local music folders and finding files is now way faster.<br>
+            • Streaming key fix: Fixed a glitch where music would stutter or drop out when pressing the streaming hotkey.</p>
+          `;
+          appendToHistory(command, updatesContent);
+          terminalInput.value = '';
+
+        } else {
+          appendToHistory(command, `<p style="color: #ff3333;">bash: command not found: "${command}". Standard evaluation rules apply. Type an available command from the menu above.</p>`);
           terminalInput.value = '';
         }
       }
