@@ -20,7 +20,7 @@
 
 > **Current Release:** v1.1.0 *"Kingston"* 🇯🇲
 
-Is your music player cluttering your desktop with heavy interfaces and unnecessary distractions? Do you miss the days when computing was fast, focused, and purely text-driven?
+**Friedrich Nietzsche** - “Without music, life would be a mistake”
 
 **MASCII** isn’t just a music player, it’s a philosophy. It transforms your terminal into a sleek, high-performance audio station that respects your workflow. Whether you're coding, writing, or just vibing, MASCII brings your library and the world of online streaming directly to your fingertips without the bloat.
 
