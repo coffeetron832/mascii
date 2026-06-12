@@ -11,7 +11,7 @@
                               ░                
 ```
 
-# mascii - Your Terminal, Your Music, Your Vibe.
+# mascii - Music that stays inside your workflow.
 
 ![Version](https://img.shields.io/badge/version-1.1.0--Kingston-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -19,8 +19,6 @@
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0-brightgreen)
 
 > **Current Release:** v1.1.0 *"Kingston"* 🇯🇲
-
-**Friedrich Nietzsche** - “Without music, life would be a mistake”
 
 **MASCII** isn’t just a music player, it’s a philosophy. It transforms your terminal into a sleek, high-performance audio station that respects your workflow. Whether you're coding, writing, or just vibing, MASCII brings your library and the world of online streaming directly to your fingertips without the bloat.
 
