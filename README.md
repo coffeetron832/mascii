@@ -20,14 +20,14 @@
 
 > **Current Release:** v1.1.0 *"Kingston"* 🇯🇲
 
-**MASCII** isn’t just a music player, it’s a philosophy. It transforms your terminal into a sleek, high-performance audio station that respects your workflow. Whether you're coding, writing, or just vibing, MASCII brings your library and the world of online streaming directly to your fingertips without the bloat.
+**mascii** isn’t just a music player, it’s a philosophy. It transforms your terminal into a sleek, high-performance audio station that respects your workflow. Whether you're coding, writing, or just vibing, mascii brings your library and the world of online streaming directly to your fingertips without the bloat.
 
 ---
 
-## Why Choose MASCII?
+## Why Choose mascii?
 
 * **Focus, Not Clutter:** Stop switching windows. Everything you need-from playlist management to volume control-happens inside your terminal.
-* **Universal Compatibility:** From high-fidelity local files to the latest track trending on YouTube, MASCII plays it all effortlessly.
+* **Universal Compatibility:** From high-fidelity local files to the latest track trending on YouTube, mascii plays it all effortlessly.
 * **Professional Audio Control:** With a built-in equalizer and seamless shuffle/loop functions, you have complete command over your soundscape.
 * **Ultra-Lightweight:** Built to run on minimal resources, leaving your CPU free to handle your real work.
 
@@ -60,5 +60,5 @@ Inside the app:
 - `S` → Shuffle
 - `L` → Loop
 - `+ / -` → Volume
-
+- `E` → Equalizer
 ---
