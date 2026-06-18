@@ -68,13 +68,12 @@
       align-items: flex-start; 
     }
 
-    .ascii-banner {
-      white-space: pre;
-      font-size: 0.75vw;
-      line-height: 1.2;
+    .brand-title {
+      font-size: 2.5rem;
+      font-weight: 800;
       color: var(--yellow-terminal);
-      margin-bottom: 16px;
-      align-self: center; 
+      margin-bottom: 8px;
+      letter-spacing: -1px;
     }
 
     .slogan-text {
@@ -267,12 +266,12 @@
     .spec-list { list-style: none; font-size: 0.78rem; }
     .spec-list li { margin-bottom: 4px; color: #aaaaaa; }
 
-    .ascii-logo-small {
-      white-space: pre;
-      font-size: 0.52vw;
-      line-height: 1.2;
+    .tui-brand-display {
+      font-size: 1.8rem;
+      font-weight: 800;
       color: var(--yellow-terminal);
       margin-bottom: 16px;
+      letter-spacing: -0.5px;
     }
 
     @media (max-width: 950px) {
@@ -290,8 +289,6 @@
         display: contents;
       }
       .tui-box { min-height: 250px; margin-bottom: 12px; }
-      .ascii-banner { font-size: 2.2vw; } 
-      .ascii-logo-small { font-size: 1.4vw; }
     }
   </style>
 </head>
@@ -299,21 +296,11 @@
 
   <div class="terminal-welcome" id="terminalWelcome">
     <div class="welcome-container">
-      <div class="ascii-banner">
- ███▄ ▄███▓ ▄▄▄        ██████  ▄████▄   ██▓ ██▓
-▓██▒▀█▀ ██▒▒████▄    ▒██    ▒ ▒██▀ ▀█  ▓██▒▓██▒
-▓██    ▓██░▒██  ▀█▄  ░ ▓██▄   ▒▓█    ▄ ▒██▒▒██▒
-▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒▒▓▓▄ ▄██▒░██░░██░
-▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒▒ ▓███▀ ░░██░░██░
-░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░░▓  ░▓  
-░  ░      ░  ▒   ▒▒ ░░ ░▒  ░ ░  ░  ▒    ▒ ░ ▒ ░
-░      ░     ░   ▒   ░  ░  ░  ░         ▒ ░ ▒ ░
-       ░         ░  ░      ░  ░ ░       ░   ░  
-                              ░                </div>
+      <h1 class="brand-title">mascii</h1>
 
       <p class="slogan-text">Music that stays inside your workflow.</p>
       <div class="repo-badges">
-        <span>[ Release: <span style="color: var(--cyan-terminal);">v1.1.0-Kingston</span> ]</span>
+        <span>[ Release: <span style="color: var(--cyan-terminal);">v2.0.0-Liverpool</span> ]</span>
         <span>[ License: <span style="color: #aaa;">MIT</span> ]</span>
       </div>
 
@@ -344,19 +331,9 @@
   <section class="terminal-fullscreen" id="appInterface">
     <div class="tui-box album-box">
       <div class="tui-label"> [ ALBUM ART ] </div>
-      <div class="ascii-logo-small">
-███▄ ▄███▓ ▄▄▄        ██████  ▄████▄   ██▓ ██▓
-▓██▒▀█▀ ██▒▒████▄    ▒██    ▒ ▒██▀ ▀█  ▓██▒▓██▒
-▓██    ▓██░▒██  ▀█▄  ░ ▓██▄   ▒██    ▄ ▒██▒▒██▒
-▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒▒██▄▄▄▄██░██░░██░
-▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒▒ ▓████▀ ░██░░██░
-░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░ ▒▒ ▓  ░░▓  ░▓  
-░  ░      ░  ▒   ▒▒ ░░ ░▒  ░ ░  ░  ▒    ▒ ░ ▒ ░
-░      ░     ░   ▒   ░  ░  ░  ░          ▒ ░ ▒ ░
-       ░         ░  ░      ░  ░ ░        ░   ░  
-                              ░                 </div>
+      <div class="tui-brand-display">mascii</div>
       <ul class="spec-list">
-        <li>• <span class="highlight-yellow">Current Version:</span> v1.1.0 Kingston</li>
+        <li>• <span class="highlight-yellow">Current Version:</span> v2.0.0 Liverpool</li>
       </ul>
     </div>
 
@@ -444,6 +421,9 @@
 
         } else if (cleanCmd === 'updates') {
           const updatesContent = `
+            <p style="color: var(--green-terminal); font-weight:bold; margin-bottom: 2px;">RELEASE NOTES - Milestone v2.0.0 Liverpool:</p>
+            <p style="color: #666; font-style: italic;">• No logs recorded yet for this release. Updates coming soon.</p>
+            <br>
             <p style="color: var(--green-terminal); font-weight:bold; margin-bottom: 2px;">RELEASE NOTES - Milestone v1.1.0 Kingston:</p>
             <p style="color: #aaa;">• Better folder browsing: Looking through your local music folders and finding files is now way faster.<br>
             • Streaming key fix: Fixed a glitch where music would stutter or drop out when pressing the streaming hotkey.</p>
