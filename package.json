@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "install": "node postinstall.js"
+    "install": "gcc snake_forward_kinematics.c -o snake_anim -lm -O3 || echo '⚠️ Warning: Could not compile native forward kinematics visualizer. Please ensure gcc is installed.'"
   },
   "repository": {
     "type": "git",
@@ -36,5 +36,12 @@
     "colorette": "^2.0.20",
     "music-metadata": "^10.9.1",
     "sharp": "^0.34.5"
-  }
+  },
+  "files": [
+    "core/",
+    "ui.js",
+    "version.js",
+    "index.js",
+    "snake_forward_kinematics.c"
+  ]
 }

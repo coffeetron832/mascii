@@ -1,35 +1,20 @@
-```text
- ███▄ ▄███▓ ▄▄▄        ██████  ▄████▄   ██▓ ██▓
-▓██▒▀█▀ ██▒▒████▄    ▒██    ▒ ▒██▀ ▀█  ▓██▒▓██▒
-▓██    ▓██░▒██  ▀█▄  ░ ▓██▄   ▒▓█    ▄ ▒██▒▒██▒
-▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒▒▓▓▄ ▄██▒░██░░██░
-▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒▒ ▓███▀ ░░██░░██░
-░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░░▓  ░▓  
-░  ░      ░  ▒   ▒▒ ░░ ░▒  ░ ░  ░  ▒    ▒ ░ ▒ ░
-░      ░     ░   ▒   ░  ░  ░  ░         ▒ ░ ▒ ░
-       ░         ░  ░      ░  ░ ░       ░   ░  
-                              ░                
-```
+![MASCII Player Logo](assets/mascii_logo_v2.png)
 
-# MASCII - Your Terminal, Your Music, Your Vibe.
+# mascii - Music that stays inside your workflow.
 
-![Version](https://img.shields.io/badge/version-1.0.6--Kingston-blue)
+![Version](https://img.shields.io/badge/version-2.0.0--Liverpool-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0-brightgreen)
 
-> **Current Release:** v1.0.6 *"Kingston"* 🇯🇲
-
-Is your music player cluttering your desktop with heavy interfaces and unnecessary distractions? Do you miss the days when computing was fast, focused, and purely text-driven?
-
-**MASCII** isn’t just a music player, it’s a philosophy. It transforms your terminal into a sleek, high-performance audio station that respects your workflow. Whether you're coding, writing, or just vibing, MASCII brings your library and the world of online streaming directly to your fingertips without the bloat.
+**mascii** isn’t just a music player, it’s a philosophy. It transforms your terminal into a sleek, high-performance audio station that respects your workflow. Whether you're coding, writing, or just vibing, mascii brings your library and the world of online streaming directly to your fingertips without the bloat.
 
 ---
 
-## Why Choose MASCII?
+## Why Choose mascii?
 
 * **Focus, Not Clutter:** Stop switching windows. Everything you need-from playlist management to volume control-happens inside your terminal.
-* **Universal Compatibility:** From high-fidelity local files to the latest track trending on YouTube, MASCII plays it all effortlessly.
+* **Universal Compatibility:** From high-fidelity local files to the latest track trending on YouTube, mascii plays it all effortlessly.
 * **Professional Audio Control:** With a built-in equalizer and seamless shuffle/loop functions, you have complete command over your soundscape.
 * **Ultra-Lightweight:** Built to run on minimal resources, leaving your CPU free to handle your real work.
 
@@ -45,7 +30,13 @@ npm install -g mascii
 
 ---
 
-## 🎮 Controls
+## Acknowledgements & Credits
+
+* **Forward Kinematics Animations:** A huge thanks to **Tamilselvan R** ([@prtamil](https://github.com/prtamil)) for his incredible work on the core mechanics and graphics of the snake kinematics visualizer. This project integrates mathematical concepts and structures adapted from his open-source repository [AsciiCreativeCoding](https://github.com/prtamil/AsciiCreativeCoding).
+
+---
+
+## Controls
 
 Inside the app:
 
@@ -56,5 +47,5 @@ Inside the app:
 - `S` → Shuffle
 - `L` → Loop
 - `+ / -` → Volume
-
+- `E` → Equalizer
 ---

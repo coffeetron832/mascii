@@ -13,17 +13,14 @@ const packageJson = JSON.parse(
 
 export const VERSION = packageJson.version;
 
-export const CODENAME = "Kingston";
-
-export const FLAG = "🇯🇲";
+export const CODENAME = "Liverpool";
 
 export const RELEASE = {
   codename: CODENAME,
-  city: "Kingston",
-  country: "Jamaica",
-  flag: FLAG
+  city: "Liverpool",
+  country: "United Kingdom"
 };
 
 export function getVersionString() {
-  return `v${VERSION} "${CODENAME}" ${FLAG}`;
+  return `v${VERSION} "${CODENAME}"`;
 }
