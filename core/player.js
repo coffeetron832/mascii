@@ -7,18 +7,17 @@ import net from "net";
 import * as mm from "music-metadata";
 import sharp from "sharp";
 
-let MUSIC_DIR = path.resolve("./music"); 
+let MUSIC_DIR = path.resolve("./music");
 const SUPPORTED_EXTENSIONS = new Set([".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac"]);
 const DEFAULT_DURATION = 180;
 const DEFAULT_VOLUME = 80;
 const YTDLP_PATH = process.env.YTDLP_PATH || "/usr/local/bin/yt-dlp";
 
-// Arte por defecto global actualizado con la vaca alineada comiendo pasto
 const DEFAULT_ART = [
   "    \\|/          (__)  ",
-  "        `\\------(oo) ",
-  "          ||    (__)  ",
-  "          ||w--||     \\|/",
+  "          `\\------(oo) ",
+  "               ||    (__)  ",
+  "               ||w--||     \\|/",
   "       \\|/             "
 ].join("\n");
 
@@ -29,6 +28,7 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
   let index = 0;
   let audioProcess = null;
   let ipcClient = null;
+  let tickerInterval = null;
 
   let playing = false;
   let isPaused = false;
@@ -55,10 +55,29 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
 
   let renderPending = false;
 
-  // Persistencia de metadatos de la pista en reproducción para redibujado dinámico
   let currentImageBuffer = null;
-  let currentAlbumName = "Art Not Available";
-  let currentAlbumYear = "2026";
+  let currentAlbumName = "Album Not Available";
+  let currentAlbumYear = "----";
+  let currentTrackNumber = "-";
+
+  let lastTrackPath = "";
+  let lastRenderedTime = -1;
+
+  const listeners = {};
+  function on(event, callback) {
+    if (!listeners[event]) listeners[event] = [];
+    listeners[event].push(callback);
+  }
+
+  function emit(event, data) {
+    if (listeners[event]) {
+      listeners[event].forEach((cb) => {
+        try {
+          cb(data);
+        } catch {}
+      });
+    }
+  }
 
   function safeCall(fn, ...args) {
     try {
@@ -87,7 +106,6 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
       index = 0;
       return;
     }
-
     if (index < 0) index = playlist.length - 1;
     if (index >= playlist.length) index = 0;
   }
@@ -106,6 +124,52 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
     const promise = mm.parseFile(filePath).catch(() => null);
     metadataCache.set(filePath, promise);
     return promise;
+  }
+
+  function normalizeYearFromMetadata(metadata) {
+    const year = metadata?.common?.year;
+    if (Number.isFinite(year)) {
+      return String(year);
+    }
+
+    const date = metadata?.common?.date;
+    if (typeof date === "string" && date.length >= 4) {
+      const match = date.match(/^(\d{4})/);
+      if (match) return match[1];
+    }
+
+    return "----";
+  }
+
+  function normalizeTrackNumberFromMetadata(metadata) {
+    const rawTrackNo = metadata?.common?.track?.no;
+
+    if (rawTrackNo === null || rawTrackNo === undefined || rawTrackNo === "") {
+      return "-";
+    }
+
+    const asString = String(rawTrackNo).trim();
+    const match = asString.match(/^(\d+)/);
+    return match ? match[1] : asString;
+  }
+
+  function syncTrackMetadata(track, metadata) {
+    if (!track || !metadata) return;
+
+    if (metadata?.common?.album) {
+      track.album = metadata.common.album;
+    }
+
+    track.year = normalizeYearFromMetadata(metadata);
+    track.trackNumber = normalizeTrackNumberFromMetadata(metadata);
+
+    if (metadata?.common?.artist) {
+      track.artist = metadata.common.artist;
+    }
+
+    if (metadata?.format?.duration && Number.isFinite(metadata.format.duration)) {
+      track.duration = Math.max(1, Math.round(metadata.format.duration));
+    }
   }
 
   function mergeTrackLists(existingTracks, localTracks) {
@@ -153,7 +217,10 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
           name: path.basename(file, ext),
           path: filePath,
           duration,
-          artist: metadata?.common?.artist || "Local Track"
+          artist: metadata?.common?.artist || "Local Track",
+          album: metadata?.common?.album || "Unknown Album",
+          year: normalizeYearFromMetadata(metadata),
+          trackNumber: normalizeTrackNumberFromMetadata(metadata)
         });
       }
 
@@ -161,7 +228,7 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
         a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
       );
 
-      playlist = mergeTrackLists([], localTracks); // Reemplaza la tracklist con la nueva carpeta limpia
+      playlist = mergeTrackLists([], localTracks);
       syncOriginalPlaylist();
 
       if (index >= playlist.length) index = 0;
@@ -179,22 +246,92 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
     if (!trackObj || !trackObj.path) return;
 
     const exists = playlist.some((track) => track.path === trackObj.path);
-    if (exists) {
-      safeCall(ui?.appendLog, `{yellow-fg}Track already exists in playlist.{/yellow-fg}`);
-      return;
-    }
+    if (exists) return;
 
-    playlist.push(trackObj);
-    originalPlaylist.push(trackObj);
+    if (playlist.length > 0) {
+      playlist.splice(index + 1, 0, trackObj);
+      originalPlaylist.splice(index + 1, 0, trackObj);
+    } else {
+      playlist.push(trackObj);
+      originalPlaylist.push(trackObj);
+    }
 
     safeCall(ui?.setPlaylist, playlist, index);
     scheduleRender();
   }
 
+  function stopProgressTicker() {
+    if (tickerInterval) {
+      clearInterval(tickerInterval);
+      tickerInterval = null;
+    }
+  }
+
+  function getCurrentTime() {
+    if (!playing) return 0;
+    let elapsed = totalElapsedTime;
+    if (!isPaused && lastResumeAt > 0) {
+      elapsed += Date.now() - lastResumeAt;
+    }
+    return Math.round(elapsed / 1000);
+  }
+
+  function getDuration() {
+    const track = getTrack();
+    return track ? track.duration || DEFAULT_DURATION : DEFAULT_DURATION;
+  }
+
+  function pushNowPlaying(forceMetadata = false) {
+    const currentTrack = getTrack();
+    if (!currentTrack || !playing) return;
+
+    const curTime = getCurrentTime();
+    const totalDur = getDuration();
+    const percent = totalDur > 0 ? Math.round((curTime / totalDur) * 100) : 0;
+
+    const isNewTrackArriving = currentTrack.path !== lastTrackPath;
+
+    if (!forceMetadata && !isNewTrackArriving && curTime === lastRenderedTime) {
+      return;
+    }
+
+    lastRenderedTime = curTime;
+    lastTrackPath = currentTrack.path;
+
+    const trackGenre = currentTrack.source === "youtube" ? "YouTube Stream" : (currentTrack.genre || "Unknown");
+
+    safeCall(
+      ui?.setNowPlaying,
+      currentTrack.name,
+      curTime,
+      totalDur,
+      percent,
+      currentAlbumName,
+      currentAlbumYear,
+      currentTrackNumber,
+      currentTrack.artist || "Unknown Artist",
+      trackGenre
+    );
+
+    scheduleRender();
+  }
+
+  function startProgressTicker() {
+    stopProgressTicker();
+    tickerInterval = setInterval(() => {
+      if (playing && !isPaused) {
+        pushNowPlaying(false);
+      }
+    }, 250);
+  }
+
   function cleanup() {
     playing = false;
     isPaused = false;
-    currentImageBuffer = null; 
+    currentImageBuffer = null;
+    lastTrackPath = "";
+    lastRenderedTime = -1;
+    stopProgressTicker();
 
     if (ipcClient) {
       try {
@@ -213,6 +350,7 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
         proc.removeAllListeners("error");
         proc.removeAllListeners("close");
         proc.stderr?.removeAllListeners?.("data");
+        proc.stdout?.removeAllListeners?.("data");
       } catch {}
 
       try {
@@ -286,7 +424,7 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
         try {
           socket.destroy();
         } catch {}
-          return;
+        return;
       }
 
       ipcClient = socket;
@@ -298,6 +436,23 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
         }
       });
 
+      ipcClient.on("data", (data) => {
+        const lines = data.toString().split("\n");
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const msg = JSON.parse(line);
+            if (msg.event === "playback-restart" || (msg.event === "property-change" && msg.name === "pause" && msg.data === false)) {
+              if (playing && !isPaused && !tickerInterval) {
+                lastResumeAt = Date.now();
+                startProgressTicker();
+              }
+            }
+          } catch {}
+        }
+      });
+
+      sendIpcCommand(["observe_property", 1, "pause"]);
       applyRuntimeSettings();
     });
 
@@ -318,6 +473,11 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
   function updatePlaylistUI() {
     safeCall(ui?.setPlaylist, playlist, index);
     safeCall(ui?.setVolumeState, currentVolume, loopState, shuffleState, eqMode);
+
+    if (playing) {
+      pushNowPlaying(true);
+    }
+
     scheduleRender();
   }
 
@@ -487,10 +647,10 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
   async function imageBufferToAscii(imageBuffer, baseKey, targetBoxSize) {
     const normalized = await normalizeImageBuffer(imageBuffer);
     if (!normalized) return null;
-    
+
     const boxSize = targetBoxSize || safeCall(ui?.getAlbumBoxSize) || { width: 22, height: 11 };
     const uniqueCacheKey = `${baseKey}_w${boxSize.width}_h${boxSize.height}`;
-    
+
     if (artCache.has(uniqueCacheKey)) {
       return artCache.get(uniqueCacheKey);
     }
@@ -499,7 +659,7 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
     const targetHeight = boxSize.height * 4;
 
     const { data, info } = await sharp(normalized)
-      .resize(targetWidth, targetHeight, { fit: "contain" }) 
+      .resize(targetWidth, targetHeight, { fit: "contain" })
       .removeAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
@@ -510,20 +670,17 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
   }
 
   async function updateAlbumArtMetadata(track, myTrackId) {
-    const defaultArt = [
-      "    \\|/          (__)  ",
-      "        `\\------(oo) ",
-      "          ||    (__)  ",
-      "          ||w--||     \\|/",
-      "       \\|/             "
-    ].join("\n");
-
     if (!track?.path) {
       if (myTrackId === currentTrackId) {
         currentImageBuffer = null;
+        currentAlbumName = "Album Not Available";
+        currentAlbumYear = "----";
+        currentTrackNumber = "-";
         safeCall(ui?.setFileInfo, "Unknown", "Unknown");
-        safeCall(ui?.setAlbumArt, defaultArt, "Art Not Available", "2026");
-        scheduleRender();
+        safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
+        pushNowPlaying(true);
+        updatePlaylistUI();
+        emit("trackChange", track);
       }
       return;
     }
@@ -535,25 +692,30 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
     if (isYoutube || isRemote) {
       if (myTrackId !== currentTrackId) return;
 
-      currentAlbumName = track.name || "YouTube Stream";
-      currentAlbumYear = "2026";
+      currentAlbumName = track.album || "Network Album";
+      currentAlbumYear = track.year || "2026";
+      currentTrackNumber = "-";
 
-      safeCall(ui?.setFileInfo, isYoutube ? "YouTube" : "WEB Stream", "Stream");
+      safeCall(ui?.setFileInfo, isYoutube ? "YouTube/Opus" : "WEB Stream", "160 kbps");
 
       const thumbUrl = track.thumbnail || null;
       if (!thumbUrl) {
         currentImageBuffer = null;
-        safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
-        scheduleRender();
+        safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
+        pushNowPlaying(true);
+        updatePlaylistUI();
+        emit("trackChange", track);
         return;
       }
 
       const baseKey = thumbUrl;
       const uniqueCacheKey = `${baseKey}_w${currentBoxSize.width}_h${currentBoxSize.height}`;
-      
+
       if (artCache.has(uniqueCacheKey)) {
         safeCall(ui?.setAlbumArt, artCache.get(uniqueCacheKey), currentAlbumName, currentAlbumYear);
-        scheduleRender();
+        pushNowPlaying(true);
+        updatePlaylistUI();
+        emit("trackChange", track);
         return;
       }
 
@@ -569,38 +731,39 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
           if (ascii) {
             safeCall(ui?.setAlbumArt, ascii, currentAlbumName, currentAlbumYear);
           } else {
-            safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
+            safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
           }
         } else {
           currentImageBuffer = null;
-          safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
+          safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
         }
       } catch {
         if (myTrackId === currentTrackId) {
           currentImageBuffer = null;
-          safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
+          safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
         }
       }
 
-      scheduleRender();
+      pushNowPlaying(true);
+      updatePlaylistUI();
+      emit("trackChange", track);
       return;
     }
 
-    currentAlbumName = "Art Not Available";
-    currentAlbumYear = "2026";
+    currentAlbumName = track.album || "Unknown Album";
+    currentAlbumYear = track.year || "----";
+    currentTrackNumber = track.trackNumber || "-";
 
     try {
       const metadata = await getMetadata(track.path);
 
       if (myTrackId !== currentTrackId) return;
 
-      if (metadata?.common?.album) currentAlbumName = metadata.common.album;
-      if (metadata?.common?.year) currentAlbumYear = String(metadata.common.year);
-      if (metadata?.common?.artist) track.artist = metadata.common.artist;
+      syncTrackMetadata(track, metadata);
 
-      if (metadata?.format?.duration && Number.isFinite(metadata.format.duration)) {
-        track.duration = Math.max(1, Math.round(metadata.format.duration));
-      }
+      currentAlbumName = track.album || "Unknown Album";
+      currentAlbumYear = track.year || "----";
+      currentTrackNumber = track.trackNumber || "-";
 
       const codec = metadata?.container || "MPEG Audio";
       const bitrate = metadata?.format?.bitrate
@@ -615,10 +778,12 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
         currentImageBuffer = picture.data;
         const baseKey = track.path;
         const uniqueCacheKey = `${baseKey}_w${currentBoxSize.width}_h${currentBoxSize.height}`;
-        
+
         if (artCache.has(uniqueCacheKey)) {
           safeCall(ui?.setAlbumArt, artCache.get(uniqueCacheKey), currentAlbumName, currentAlbumYear);
-          scheduleRender();
+          pushNowPlaying(true);
+          updatePlaylistUI();
+          emit("trackChange", track);
           return;
         }
 
@@ -628,21 +793,25 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
         if (ascii) {
           safeCall(ui?.setAlbumArt, ascii, currentAlbumName, currentAlbumYear);
         } else {
-          safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
+          safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
         }
       } else {
         currentImageBuffer = null;
-        safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
+        safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
       }
     } catch {
       if (myTrackId === currentTrackId) {
         currentImageBuffer = null;
         safeCall(ui?.setFileInfo, "Unknown", "Unknown");
-        safeCall(ui?.setAlbumArt, defaultArt, currentAlbumName, currentAlbumYear);
+        safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
       }
     }
 
-    if (myTrackId === currentTrackId) scheduleRender();
+    if (myTrackId === currentTrackId) {
+      pushNowPlaying(true);
+      updatePlaylistUI();
+      emit("trackChange", track);
+    }
   }
 
   function getNextIndexForAutoAdvance() {
@@ -660,27 +829,13 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
     return loopState ? 0 : -1;
   }
 
-  function getPrevIndex() {
-    if (!playlist.length) return -1;
-
-    if (shuffleState && playlist.length > 1) {
-      let prevIndex = index;
-      while (prevIndex === index) {
-        prevIndex = Math.floor(Math.random() * playlist.length);
-      }
-      return prevIndex;
-    }
-
-    if (index - 1 >= 0) return index - 1;
-    return loopState ? playlist.length - 1 : 0;
-  }
-
   function play() {
-    const track = getTrack();
+    ensureIndex();
+    const track = playlist[index];
 
     if (!track) {
       safeCall(ui?.appendLog, "{red-fg}No music found.{/red-fg} Add files or URLs.");
-      safeCall(ui?.setAlbumArt, DEFAULT_ART, "Art Not Available", "2026");
+      safeCall(ui?.setAlbumArt, DEFAULT_ART, "Album Not Available", "----");
       scheduleRender();
       return;
     }
@@ -732,6 +887,8 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
       audioProcess.on("exit", (code) => {
         if (myTrackId !== currentTrackId) return;
 
+        stopProgressTicker();
+
         if (isManualKill) {
           playing = false;
           isPaused = false;
@@ -768,22 +925,147 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
         if (myTrackId !== currentTrackId) return;
         playing = false;
         isPaused = false;
+        stopProgressTicker();
         safeCall(ui?.appendLog, `{red-fg}Failed to launch mpv:{/red-fg} ${error?.message || error}`);
         scheduleRender();
       });
 
-      safeCall(ui?.setFileInfo, isUrl ? "Streaming" : "MPEG Layer 3", isUrl ? "Network" : "320kbps");
-      safeCall(ui?.setPlaylist, playlist, index);
-      updateAlbumArtMetadata(track, myTrackId);
+      if (track.source === "youtube" || isUrl) {
+        safeCall(ui?.setFileInfo, "YouTube/Opus", "160 kbps");
+        currentAlbumName = track.album || "YouTube Single";
+        currentAlbumYear = track.year || "2026";
+        currentTrackNumber = "-";
+      } else {
+        safeCall(ui?.setFileInfo, "MPEG Layer 3", "320kbps");
+        currentAlbumName = track.album || "Unknown Album";
+        currentAlbumYear = track.year || "----";
+        currentTrackNumber = track.trackNumber || "-";
+        
+        startProgressTicker();
+      }
 
+      updateAlbumArtMetadata(track, myTrackId);
       connectIpcWithRetry(myTrackId);
       updatePlaylistUI();
+      emit("trackChange", track); 
+
     } catch (error) {
       playing = false;
       isPaused = false;
+      stopProgressTicker();
       safeCall(ui?.appendLog, `{red-fg}Playback failed:{/red-fg} ${error?.message || error}`);
       scheduleRender();
     }
+  }
+
+  async function getLinkInfo(url) {
+    if (!url) return null;
+    try {
+      const child = spawn(YTDLP_PATH, [
+        "--dump-json",
+        "--skip-download",
+        "--no-playlist",
+        "--no-check-certificates",
+        url
+      ]);
+
+      let rawData = "";
+      child.stdout.on("data", (chunk) => { rawData += chunk; });
+
+      await new Promise((resolve) => {
+        child.on("close", () => resolve());
+        setTimeout(() => { try { child.kill(); } catch {} resolve(); }, 8000);
+      });
+
+      if (!rawData) return null;
+      const json = JSON.parse(rawData);
+
+      let year = "2026";
+      if (typeof json.upload_date === "string" && json.upload_date.length >= 4) {
+        year = json.upload_date.substring(0, 4);
+      } else if (json.release_year) {
+        year = String(json.release_year);
+      }
+
+      return {
+        title: json.title || "YouTube Audio Stream",
+        duration: json.duration ? Math.round(json.duration) : DEFAULT_DURATION,
+        thumbnail: json.thumbnail || null,
+        artist: json.uploader || "Remote Stream",
+        album: json.album || (json.uploader ? `${json.uploader} Single` : "Network Album"),
+        year: year
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  async function playYoutube(url) {
+    if (!url) return;
+
+    safeCall(ui?.appendLog, "{yellow-fg}Obteniendo información del stream...{/yellow-fg}");
+    const info = await getLinkInfo(url);
+
+    const remoteTrack = {
+      name: info?.title || "YouTube Audio Stream",
+      path: url,
+      duration: info?.duration || DEFAULT_DURATION,
+      artist: info?.artist || "Remote Stream",
+      album: info?.album || "Network Album",
+      year: info?.year || "2026",
+      trackNumber: "-",
+      source: "youtube",
+      thumbnail: info?.thumbnail || null
+    };
+
+    const targetIndex = playlist.findIndex((t) => t.path === url);
+    if (targetIndex !== -1) {
+      playlist[targetIndex] = remoteTrack;
+      index = targetIndex;
+    } else {
+      playlist.push(remoteTrack);
+      originalPlaylist.push(remoteTrack);
+      index = playlist.length - 1;
+    }
+
+    safeCall(ui?.setPlaylist, playlist, index);
+    play();
+  }
+
+  function downloadYoutubeAudio(url, quality = "bestaudio", onProgress, onDone) {
+    if (!url) return;
+
+    safeCall(ui?.appendLog, "{yellow-fg}Iniciando la extracción del audio local...{/yellow-fg}");
+
+    const args = [
+      "--extract-audio",
+      "--audio-format", "mp3",
+      "--audio-quality", quality === "bestaudio" ? "0" : "5",
+      "-o", path.join(MUSIC_DIR, "%(title)s.%(ext)s"),
+      "--no-playlist",
+      "--no-check-certificates",
+      url
+    ];
+
+    const child = spawn(YTDLP_PATH, args);
+
+    child.stdout.on("data", (data) => {
+      const output = data.toString();
+      if (typeof onProgress === "function") {
+        const match = output.match(/\[download\]\s+(\d+\.\d+)%/);
+        if (match) onProgress(match[1]);
+      }
+    });
+
+    child.on("close", (code) => {
+      if (code === 0) {
+        loadTracks().then(() => {
+          if (typeof onDone === "function") onDone(true);
+        });
+      } else {
+        if (typeof onDone === "function") onDone(false);
+      }
+    });
   }
 
   function toggle() {
@@ -796,11 +1078,13 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
       totalElapsedTime += Date.now() - lastResumeAt;
       isPaused = true;
       sendIpcCommand(["set_property", "pause", true]);
+      stopProgressTicker();
       safeCall(ui?.appendLog, "{yellow-fg}Playback Paused{/yellow-fg}");
     } else {
       lastResumeAt = Date.now();
       isPaused = false;
       sendIpcCommand(["set_property", "pause", false]);
+      startProgressTicker();
       safeCall(ui?.clearLog);
     }
 
@@ -840,7 +1124,13 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
   function setMusicDir(newPath) {
     MUSIC_DIR = path.resolve(newPath);
     index = 0;
-    return loadTracks(); 
+    return loadTracks();
+  }
+
+  function setIndex(newIndex) {
+    if (newIndex >= 0 && newIndex < playlist.length) {
+      index = newIndex;
+    }
   }
 
   function isPlaying() {
@@ -851,6 +1141,10 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
     return index;
   }
 
+  function getCurrentTrack() {
+    return getTrack();
+  }
+
   function getTracks() {
     return playlist;
   }
@@ -859,119 +1153,61 @@ export function createPlayer({ playlist: initialPlaylist = [], ui }) {
     return currentVolume;
   }
 
-  function isLoop() {
+  function getLoop() {
     return loopState;
   }
 
-  function isShuffle() {
+  function getShuffle() {
     return shuffleState;
   }
 
-  function getEQ() {
+  function getEQMode() {
     return eqMode;
   }
 
-  function getCurrentTime() {
-    if (!playing) return 0;
-    if (isPaused) return Math.floor(totalElapsedTime / 1000);
-
-    const currentSegment = Date.now() - lastResumeAt;
-    return Math.floor((totalElapsedTime + currentSegment) / 1000);
-  }
-
-  function getDuration() {
+  async function resizeAlbumArt() {
+    if (!playing || !currentImageBuffer) return;
     const track = getTrack();
-    return track && track.duration ? track.duration : DEFAULT_DURATION;
-  }
+    if (!track) return;
 
-  syncOriginalPlaylist();
-  safeCall(loadTracks);
+    const currentBoxSize = safeCall(ui?.getAlbumBoxSize);
+    if (!currentBoxSize) return;
 
-  safeCall(ui?.onResize, async () => {
-    if (currentImageBuffer && playing) {
-      const currentBoxSize = safeCall(ui?.getAlbumBoxSize) || { width: 22, height: 11 };
-      const baseKey = getTrack()?.path || "resize";
-      
-      const resizedAscii = await imageBufferToAscii(currentImageBuffer, baseKey, currentBoxSize);
-      if (resizedAscii) {
-        safeCall(ui?.setAlbumArt, resizedAscii, currentAlbumName, currentAlbumYear);
+    try {
+      const ascii = await imageBufferToAscii(currentImageBuffer, track.path, currentBoxSize);
+      if (ascii) {
+        safeCall(ui?.setAlbumArt, ascii, currentAlbumName, currentAlbumYear);
+        updatePlaylistUI();
       }
-    } else if (!currentImageBuffer && playing) {
-      safeCall(ui?.setAlbumArt, DEFAULT_ART, currentAlbumName, currentAlbumYear);
-    }
-  });
-
-  // =========================================================================
-  // ENLAZAR LOS EVENTOS INTERACTIVOS PROVENIENTES DE LA UI (CORREGIDO)
-  // =========================================================================
-  
-  safeCall(ui?.onFolderSelected, async (newFolderPath) => {
-    await setMusicDir(newFolderPath);
-  });
-
-  safeCall(ui?.onFileSelected, async (absolutePath, trackName) => {
-    isManualKill = true;
-    cleanup();
-
-    // Sincronizar directorio si el archivo viene de una carpeta distinta
-    const targetDir = path.dirname(absolutePath);
-    if (path.resolve(MUSIC_DIR) !== path.resolve(targetDir)) {
-      MUSIC_DIR = path.resolve(targetDir);
-      await loadTracks(); 
-    }
-
-    // Buscar el índice del archivo seleccionado en la playlist recién cargada
-    let targetIndex = playlist.findIndex(
-      (track) => path.resolve(track.path) === path.resolve(absolutePath)
-    );
-
-    // En caso de que la extensión no esté soportada por defecto, se añade como fallback
-    if (targetIndex === -1) {
-      const ext = path.extname(absolutePath).toLowerCase();
-      const metadata = await getMetadata(absolutePath);
-      const duration =
-        metadata?.format?.duration && Number.isFinite(metadata.format.duration)
-          ? Math.max(1, Math.round(metadata.format.duration))
-          : DEFAULT_DURATION;
-
-      const newTrack = {
-        name: trackName || path.basename(absolutePath, ext),
-        path: absolutePath,
-        duration,
-        artist: metadata?.common?.artist || "Local Track"
-      };
-
-      playlist.push(newTrack);
-      originalPlaylist.push(newTrack);
-      targetIndex = playlist.length - 1;
-    }
-
-    index = targetIndex;
-    play(); 
-  });
+    } catch {}
+  }
 
   return {
+    on,
+    loadTracks,
+    addTrack,
     play,
-    stop,
+    getLinkInfo,
+    playYoutube,
+    downloadYoutubeAudio,
     toggle,
+    stop,
     next,
     prev,
-    isPlaying,
-    getTrack,
-    getCurrentIndex,
-    getTracks,
-    getCurrentTime,
-    getDuration,
-    loadTracks,
-    getVolume,
-    isLoop,
-    isShuffle,
-    getEQ,
     setVolume,
     toggleLoop,
     toggleShuffle,
     cycleEQ,
-    addTrack,
-    setMusicDir
+    setMusicDir,
+    setIndex,
+    isPlaying,
+    getCurrentIndex,
+    getCurrentTrack,
+    getTracks,
+    getVolume,
+    getLoop,
+    getShuffle,
+    getEQMode,
+    resizeAlbumArt
   };
 }
