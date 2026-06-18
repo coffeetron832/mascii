@@ -328,6 +328,7 @@
       <div class="command-zone">
         <div class="command-row"><span class="cmd-name">mascii</span><span class="cmd-desc">Launch audio player dashboard</span></div>
         <div class="command-row"><span class="cmd-name">updates</span><span class="cmd-desc">Read latest release logs</span></div>
+        <div class="command-row"><span class="cmd-name">versions</span><span class="cmd-desc">List all released versions and dates</span></div>
       </div>
 
       <hr class="terminal-hr">
@@ -449,6 +450,30 @@
             • Streaming key fix: Fixed a glitch where music would stutter or drop out when pressing the streaming hotkey.</p>
           `;
           appendToHistory(command, updatesContent);
+          terminalInput.value = '';
+
+        } else if (cleanCmd === 'versions') {
+          const versionsContent = `
+            <p style="color: var(--cyan-terminal); font-weight:bold; margin-bottom: 6px;">MASCII VERSION HISTORY:</p>
+            <div style="display: grid; grid-template-columns: 90px 120px 1fr; gap: 2px; font-size: 0.85rem;">
+              <span style="color: #ffffff; font-weight: bold;">VERSION</span>
+              <span style="color: var(--yellow-terminal); font-weight: bold;">CODENAME</span>
+              <span style="color: var(--dim-text); font-weight: bold;">RELEASE DATE</span>
+              
+              <span style="color: var(--green-terminal);">v2.0.0</span>
+              <span style="color: #cccccc;">Liverpool</span>
+              <span style="color: #aaa;">June 18, 2026 (Current)</span>
+              
+              <span style="color: var(--green-terminal);">v1.1.0</span>
+              <span style="color: #cccccc;">Kingston</span>
+              <span style="color: #aaa;">Jun 10, 2026</span>
+              
+              <span style="color: var(--green-terminal);">v1.0.0</span>
+              <span style="color: #cccccc;">Baseline</span>
+              <span style="color: #aaa;">May 27, 2026</span>
+            </div>
+          `;
+          appendToHistory(command, versionsContent);
           terminalInput.value = '';
 
         } else {
