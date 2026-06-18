@@ -6,7 +6,7 @@
   <title>mascii - Music that stays inside your workflow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght=400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -17,11 +17,6 @@
       --yellow-terminal: #ffff00;
       --gray-border: #444444;
       --dim-text: #888888;
-      
-      /* Nuevos colores de identidad del logo MASCII */
-      --logo-red: #ff3333;
-      --logo-blue: #3333ff;
-      --logo-white: #ffffff;
     }
 
     * {
@@ -39,6 +34,11 @@
       overflow: hidden;
       position: relative;
     }
+
+    /* Clases añadidas para el nuevo logotipo ASCII a color */
+    .red { color: #ff3333; }
+    .blue { color: #3333ff; }
+    .white { color: #ffffff; }
 
     .terminal-welcome {
       position: absolute;
@@ -75,16 +75,11 @@
 
     .ascii-banner {
       white-space: pre;
-      font-size: 0.75vw;
+      font-size: 0.68vw;
       line-height: 1.2;
       margin-bottom: 16px;
       align-self: center; 
     }
-
-    /* Clases de color para alternar en el logo ASCII */
-    .l-red { color: var(--logo-red); }
-    .l-blue { color: var(--logo-blue); }
-    .l-white { color: var(--logo-white); }
 
     .slogan-text {
       color: var(--dim-text);
@@ -278,7 +273,7 @@
 
     .ascii-logo-small {
       white-space: pre;
-      font-size: 0.52vw;
+      font-size: 0.50vw;
       line-height: 1.2;
       margin-bottom: 16px;
     }
@@ -307,16 +302,14 @@
 
   <div class="terminal-welcome" id="terminalWelcome">
     <div class="welcome-container">
-      <div class="ascii-banner"><span class="l-red"> ███▄ ▄███▓</span> <span class="l-blue">▄▄▄       </span> <span class="l-white">██████ </span> <span class="l-red"> ▄████▄  </span> <span class="l-blue"> ██▓</span> <span class="l-white">██▓</span>
-<span class="l-red">▓██▒▀█▀ ██▒</span> <span class="l-blue">▒████▄   </span> <span class="l-white">▒██    ▒</span> <span class="l-red">▒██▀ ▀█  </span> <span class="l-blue">▓██▒</span> <span class="l-white">▓██▒</span>
-<span class="l-red">▓██    ▓██░</span> <span class="l-blue">▒██  ▀█▄ </span> <span class="l-white">░ ▓██▄  </span> <span class="l-red">▒▓█    ▄ </span> <span class="l-blue">▒██▒</span> <span class="l-white">▒██▒</span>
-<span class="l-red">▒██    ▒██ </span> <span class="l-blue">░██▄▄▄▄██</span> <span class="l-white">   ▒   ██</span><span class="l-red">▒▒▓▓▄ ▄██▒</span> <span class="l-blue">░██░</span> <span class="l-white">░██░</span>
-<span class="l-red">▒██▒   ░██▒</span> <span class="l-blue"> ▓█   ▓██▒</span> <span class="l-white">▒██████▒</span><span class="l-red">▒▒ ▓███▀ ░</span> <span class="l-blue">░██░</span> <span class="l-white">░██░</span>
-<span class="l-red">░ ▒░   ░  ░</span> <span class="l-blue"> ▒▒   ▓▒█░</span> <span class="l-white">▒ ▒▓▒ ▒ ░</span><span class="l-red">░ ░▒ ▒  ░</span> <span class="l-blue">░▓  </span> <span class="l-white">░▓  </span>
-<span class="l-red">░  ░      ░</span> <span class="l-blue">  ▒   ▒▒ ░</span> <span class="l-white">░ ░▒  ░ ░</span><span class="l-red">  ░  ▒   </span> <span class="l-blue"> ▒ ░</span> <span class="l-white"> ▒ ░</span>
-<span class="l-red">░      ░   </span> <span class="l-blue">  ░   ▒  </span> <span class="l-white"> ░  ░  ░ </span><span class="l-red"> ░        </span> <span class="l-blue"> ▒ ░</span> <span class="l-white"> ▒ ░</span>
-<span class="l-red">       ░   </span> <span class="l-blue">      ░  </span> <span class="l-white"> ░      ░</span><span class="l-red">  ░ ░      </span> <span class="l-blue"> ░  </span> <span class="l-white"> ░  </span>
-                               <span class="l-red">░       </span></div>
+      <div class="ascii-banner">                                          <span class="red">d8b</span> <span class="blue">d8b</span>
+                                          <span class="red">Y8P</span> <span class="blue">Y8P</span>
+                                                     
+<span class="red">88888b.d88b.</span>   <span class="blue">8888b.</span>   <span class="white">.d8888b</span>   <span class="red">.d8888b</span> <span class="blue">888</span> <span class="white">888</span> 
+<span class="red">888 "888 "88b</span>      <span class="blue">"88b</span> <span class="white">88K</span>      <span class="red">d88P"</span>    <span class="blue">888</span> <span class="white">888</span> 
+<span class="red">888  888  888</span>  <span class="blue">.d888888</span> <span class="white">"Y8888b.</span> <span class="red">888</span>      <span class="blue">888</span> <span class="white">888</span> 
+<span class="red">888  888  888</span>  <span class="blue">888  888</span>      <span class="white">X88</span> <span class="red">Y88b.</span>    <span class="blue">888</span> <span class="white">888</span> 
+<span class="red">888  888  888</span>  <span class="blue">"Y888888</span>  <span class="white">88888P'</span>  <span class="red">"Y8888P</span> <span class="blue">888</span> <span class="white">888</span></div>
 
       <p class="slogan-text">Music that stays inside your workflow.</p>
       <div class="repo-badges">
@@ -351,16 +344,14 @@
   <section class="terminal-fullscreen" id="appInterface">
     <div class="tui-box album-box">
       <div class="tui-label"> [ ALBUM ART ] </div>
-      <div class="ascii-logo-small"><span class="l-red">███▄ ▄███▓</span> <span class="l-blue">▄▄▄       </span> <span class="l-white">██████ </span>  <span class="l-red">▄████▄  </span> <span class="l-blue"> ██▓</span> <span class="l-white">██▓</span>
-<span class="l-red">▓██▒▀█▀ ██▒</span> <span class="l-blue">▒████▄   </span> <span class="l-white">▒██    ▒</span>  <span class="l-red">▒██▀ ▀█  </span> <span class="l-blue">▓██▒</span> <span class="l-white">▓██▒</span>
-<span class="l-red">▓██    ▓██░</span> <span class="l-blue">▒██  ▀█▄ </span> <span class="l-white">░ ▓██▄  </span>  <span class="l-red">▒██    ▄ </span> <span class="l-blue">▒██▒</span> <span class="l-white">▒██▒</span>
-<span class="l-red">▒██    ▒██ </span> <span class="l-blue">░██▄▄▄▄██</span> <span class="l-white">   ▒   ██</span><span class="l-red">▒▒██▄▄▄▄██</span> <span class="l-blue">░██░</span> <span class="l-white">░██░</span>
-<span class="l-red">▒██▒   ░██▒</span> <span class="l-blue"> ▓█   ▓██▒</span> <span class="l-white">▒██████▒</span><span class="l-red">▒▒ ▓████▀ </span> <span class="l-blue">░██░</span> <span class="l-white">░██░</span>
-<span class="l-red">░ ▒░   ░  ░</span> <span class="l-blue"> ▒▒   ▓▒█░</span> <span class="l-white">▒ ▒▓▒ ▒ ░</span><span class="l-red">░ ▒▒ ▓    </span> <span class="l-blue">░▓  </span> <span class="l-white">░▓  </span>
-<span class="l-red">░  ░      ░</span> <span class="l-blue">  ▒   ▒▒ ░</span> <span class="l-white">░ ░▒  ░ ░</span><span class="l-red">  ░  ▒    </span> <span class="l-blue"> ▒ ░</span> <span class="l-white"> ▒ ░</span>
-<span class="l-red">░      ░   </span> <span class="l-blue">  ░   ▒  </span> <span class="l-white"> ░  ░  ░ </span><span class="l-red"> ░        </span> <span class="l-blue"> ▒ ░</span> <span class="l-white"> ▒ ░</span>
-<span class="l-red">       ░   </span> <span class="l-blue">      ░  </span> <span class="l-white"> ░      ░</span><span class="l-red">  ░ ░      </span> <span class="l-blue"> ░  </span> <span class="l-white"> ░  </span>
-                               <span class="l-red">░         </span></div>
+      <div class="ascii-logo-small">                                          <span class="red">d8b</span> <span class="blue">d8b</span>
+                                          <span class="red">Y8P</span> <span class="blue">Y8P</span>
+                                                     
+<span class="red">88888b.d88b.</span>   <span class="blue">8888b.</span>   <span class="white">.d8888b</span>   <span class="red">.d8888b</span> <span class="blue">888</span> <span class="white">888</span> 
+<span class="red">888 "888 "88b</span>      <span class="blue">"88b</span> <span class="white">88K</span>      <span class="red">d88P"</span>    <span class="blue">888</span> <span class="white">888</span> 
+<span class="red">888  888  888</span>  <span class="blue">.d888888</span> <span class="white">"Y8888b.</span> <span class="red">888</span>      <span class="blue">888</span> <span class="white">888</span> 
+<span class="red">888  888  888</span>  <span class="blue">888  888</span>      <span class="white">X88</span> <span class="red">Y88b.</span>    <span class="blue">888</span> <span class="white">888</span> 
+<span class="red">888  888  888</span>  <span class="blue">"Y888888</span>  <span class="white">88888P'</span>  <span class="red">"Y8888P</span> <span class="blue">888</span> <span class="white">888</span></div>
       <ul class="spec-list">
         <li>• <span class="highlight-yellow">Current Version:</span> v2.0.0 Liverpool</li>
       </ul>
@@ -450,11 +441,11 @@
 
         } else if (cleanCmd === 'updates') {
           const updatesContent = `
-            <p style="color: var(--cyan-terminal); font-weight:bold; margin-bottom: 4px;">RELEASE NOTES - Milestone v2.0.0 Liverpool:</p>
-            <p style="color: #666; font-style: italic; margin-bottom: 12px;">(Changelog entry empty. Feature list pending update...)</p>
-            
-            <p style="color: var(--green-terminal); font-weight:bold; margin-bottom: 2px;">RELEASE NOTES - Milestone v1.1.0 Kingston:</p>
-            <p style="color: #aaa; margin-bottom: 4px;">• Better folder browsing: Looking through your local music folders and finding files is now way faster.<br>
+            <p style="color: var(--green-terminal); font-weight:bold; margin-bottom: 2px;">RELEASE NOTES - Milestone v2.0.0 Liverpool:</p>
+            <p style="color: #666666; font-style: italic;">• No logs recorded yet for this release. Updates will be listed soon.</p>
+            <br>
+            <p style="color: var(--dim-text); font-weight:bold; margin-bottom: 2px;">Previous Releases - Milestone v1.1.0 Kingston:</p>
+            <p style="color: #aaa;">• Better folder browsing: Looking through your local music folders and finding files is now way faster.<br>
             • Streaming key fix: Fixed a glitch where music would stutter or drop out when pressing the streaming hotkey.</p>
           `;
           appendToHistory(command, updatesContent);
