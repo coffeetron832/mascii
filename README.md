@@ -1,24 +1,11 @@
-```text
- ███▄ ▄███▓ ▄▄▄        ██████  ▄████▄   ██▓ ██▓
-▓██▒▀█▀ ██▒▒████▄    ▒██    ▒ ▒██▀ ▀█  ▓██▒▓██▒
-▓██    ▓██░▒██  ▀█▄  ░ ▓██▄   ▒▓█    ▄ ▒██▒▒██▒
-▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒▒▓▓▄ ▄██▒░██░░██░
-▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒▒ ▓███▀ ░░██░░██░
-░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░░▓  ░▓  
-░  ░      ░  ▒   ▒▒ ░░ ░▒  ░ ░  ░  ▒    ▒ ░ ▒ ░
-░      ░     ░   ▒   ░  ░  ░  ░         ▒ ░ ▒ ░
-       ░         ░  ░      ░  ░ ░       ░   ░  
-                              ░                
-```
+![MASCII Player Logo](assets/mascii_logo_v2.png)
 
 # mascii - Music that stays inside your workflow.
 
-![Version](https://img.shields.io/badge/version-1.1.0--Kingston-blue)
+![Version](https://img.shields.io/badge/version-2.0.0--Liverpool-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey)
 ![Node](https://img.shields.io/badge/node-%3E%3D16.0-brightgreen)
-
-> **Current Release:** v1.1.0 *"Kingston"* 🇯🇲
 
 **mascii** isn’t just a music player, it’s a philosophy. It transforms your terminal into a sleek, high-performance audio station that respects your workflow. Whether you're coding, writing, or just vibing, mascii brings your library and the world of online streaming directly to your fingertips without the bloat.
 
@@ -45,7 +32,7 @@ npm install -g mascii
 
 ## Acknowledgements & Credits
 
-* **Default ASCII Art Mascot:** The cute default cow mascot used in the player was sourced from the [ASCII Art Archive](https://www.asciiart.eu/art/495363fc8e89c778). Huge thanks to the anonymous artist and the community for preserving these amazing terminal graphics!
+* **Forward Kinematics Animations:** A huge thanks to **Tamilselvan R** ([@prtamil](https://github.com/prtamil)) for his incredible work on the core mechanics and graphics of the snake kinematics visualizer. This project integrates mathematical concepts and structures adapted from his open-source repository [AsciiCreativeCoding](https://github.com/prtamil/AsciiCreativeCoding).
 
 ---
 
