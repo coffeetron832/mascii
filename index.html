@@ -6,7 +6,7 @@
   <title>mascii - Music that stays inside your workflow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght=400;500;700;800&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -17,6 +17,11 @@
       --yellow-terminal: #ffff00;
       --gray-border: #444444;
       --dim-text: #888888;
+      
+      /* Nuevos colores de identidad del logo MASCII */
+      --logo-red: #ff3333;
+      --logo-blue: #3333ff;
+      --logo-white: #ffffff;
     }
 
     * {
@@ -68,13 +73,18 @@
       align-items: flex-start; 
     }
 
-    .brand-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--yellow-terminal);
-      margin-bottom: 8px;
-      letter-spacing: -1px;
+    .ascii-banner {
+      white-space: pre;
+      font-size: 0.75vw;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      align-self: center; 
     }
+
+    /* Clases de color para alternar en el logo ASCII */
+    .l-red { color: var(--logo-red); }
+    .l-blue { color: var(--logo-blue); }
+    .l-white { color: var(--logo-white); }
 
     .slogan-text {
       color: var(--dim-text);
@@ -266,12 +276,11 @@
     .spec-list { list-style: none; font-size: 0.78rem; }
     .spec-list li { margin-bottom: 4px; color: #aaaaaa; }
 
-    .tui-brand-display {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--yellow-terminal);
+    .ascii-logo-small {
+      white-space: pre;
+      font-size: 0.52vw;
+      line-height: 1.2;
       margin-bottom: 16px;
-      letter-spacing: -0.5px;
     }
 
     @media (max-width: 950px) {
@@ -289,6 +298,8 @@
         display: contents;
       }
       .tui-box { min-height: 250px; margin-bottom: 12px; }
+      .ascii-banner { font-size: 2.2vw; } 
+      .ascii-logo-small { font-size: 1.4vw; }
     }
   </style>
 </head>
@@ -296,7 +307,16 @@
 
   <div class="terminal-welcome" id="terminalWelcome">
     <div class="welcome-container">
-      <h1 class="brand-title">mascii</h1>
+      <div class="ascii-banner"><span class="l-red"> ███▄ ▄███▓</span> <span class="l-blue">▄▄▄       </span> <span class="l-white">██████ </span> <span class="l-red"> ▄████▄  </span> <span class="l-blue"> ██▓</span> <span class="l-white">██▓</span>
+<span class="l-red">▓██▒▀█▀ ██▒</span> <span class="l-blue">▒████▄   </span> <span class="l-white">▒██    ▒</span> <span class="l-red">▒██▀ ▀█  </span> <span class="l-blue">▓██▒</span> <span class="l-white">▓██▒</span>
+<span class="l-red">▓██    ▓██░</span> <span class="l-blue">▒██  ▀█▄ </span> <span class="l-white">░ ▓██▄  </span> <span class="l-red">▒▓█    ▄ </span> <span class="l-blue">▒██▒</span> <span class="l-white">▒██▒</span>
+<span class="l-red">▒██    ▒██ </span> <span class="l-blue">░██▄▄▄▄██</span> <span class="l-white">   ▒   ██</span><span class="l-red">▒▒▓▓▄ ▄██▒</span> <span class="l-blue">░██░</span> <span class="l-white">░██░</span>
+<span class="l-red">▒██▒   ░██▒</span> <span class="l-blue"> ▓█   ▓██▒</span> <span class="l-white">▒██████▒</span><span class="l-red">▒▒ ▓███▀ ░</span> <span class="l-blue">░██░</span> <span class="l-white">░██░</span>
+<span class="l-red">░ ▒░   ░  ░</span> <span class="l-blue"> ▒▒   ▓▒█░</span> <span class="l-white">▒ ▒▓▒ ▒ ░</span><span class="l-red">░ ░▒ ▒  ░</span> <span class="l-blue">░▓  </span> <span class="l-white">░▓  </span>
+<span class="l-red">░  ░      ░</span> <span class="l-blue">  ▒   ▒▒ ░</span> <span class="l-white">░ ░▒  ░ ░</span><span class="l-red">  ░  ▒   </span> <span class="l-blue"> ▒ ░</span> <span class="l-white"> ▒ ░</span>
+<span class="l-red">░      ░   </span> <span class="l-blue">  ░   ▒  </span> <span class="l-white"> ░  ░  ░ </span><span class="l-red"> ░        </span> <span class="l-blue"> ▒ ░</span> <span class="l-white"> ▒ ░</span>
+<span class="l-red">       ░   </span> <span class="l-blue">      ░  </span> <span class="l-white"> ░      ░</span><span class="l-red">  ░ ░      </span> <span class="l-blue"> ░  </span> <span class="l-white"> ░  </span>
+                               <span class="l-red">░       </span></div>
 
       <p class="slogan-text">Music that stays inside your workflow.</p>
       <div class="repo-badges">
@@ -331,7 +351,16 @@
   <section class="terminal-fullscreen" id="appInterface">
     <div class="tui-box album-box">
       <div class="tui-label"> [ ALBUM ART ] </div>
-      <div class="tui-brand-display">mascii</div>
+      <div class="ascii-logo-small"><span class="l-red">███▄ ▄███▓</span> <span class="l-blue">▄▄▄       </span> <span class="l-white">██████ </span>  <span class="l-red">▄████▄  </span> <span class="l-blue"> ██▓</span> <span class="l-white">██▓</span>
+<span class="l-red">▓██▒▀█▀ ██▒</span> <span class="l-blue">▒████▄   </span> <span class="l-white">▒██    ▒</span>  <span class="l-red">▒██▀ ▀█  </span> <span class="l-blue">▓██▒</span> <span class="l-white">▓██▒</span>
+<span class="l-red">▓██    ▓██░</span> <span class="l-blue">▒██  ▀█▄ </span> <span class="l-white">░ ▓██▄  </span>  <span class="l-red">▒██    ▄ </span> <span class="l-blue">▒██▒</span> <span class="l-white">▒██▒</span>
+<span class="l-red">▒██    ▒██ </span> <span class="l-blue">░██▄▄▄▄██</span> <span class="l-white">   ▒   ██</span><span class="l-red">▒▒██▄▄▄▄██</span> <span class="l-blue">░██░</span> <span class="l-white">░██░</span>
+<span class="l-red">▒██▒   ░██▒</span> <span class="l-blue"> ▓█   ▓██▒</span> <span class="l-white">▒██████▒</span><span class="l-red">▒▒ ▓████▀ </span> <span class="l-blue">░██░</span> <span class="l-white">░██░</span>
+<span class="l-red">░ ▒░   ░  ░</span> <span class="l-blue"> ▒▒   ▓▒█░</span> <span class="l-white">▒ ▒▓▒ ▒ ░</span><span class="l-red">░ ▒▒ ▓    </span> <span class="l-blue">░▓  </span> <span class="l-white">░▓  </span>
+<span class="l-red">░  ░      ░</span> <span class="l-blue">  ▒   ▒▒ ░</span> <span class="l-white">░ ░▒  ░ ░</span><span class="l-red">  ░  ▒    </span> <span class="l-blue"> ▒ ░</span> <span class="l-white"> ▒ ░</span>
+<span class="l-red">░      ░   </span> <span class="l-blue">  ░   ▒  </span> <span class="l-white"> ░  ░  ░ </span><span class="l-red"> ░        </span> <span class="l-blue"> ▒ ░</span> <span class="l-white"> ▒ ░</span>
+<span class="l-red">       ░   </span> <span class="l-blue">      ░  </span> <span class="l-white"> ░      ░</span><span class="l-red">  ░ ░      </span> <span class="l-blue"> ░  </span> <span class="l-white"> ░  </span>
+                               <span class="l-red">░         </span></div>
       <ul class="spec-list">
         <li>• <span class="highlight-yellow">Current Version:</span> v2.0.0 Liverpool</li>
       </ul>
@@ -421,11 +450,11 @@
 
         } else if (cleanCmd === 'updates') {
           const updatesContent = `
-            <p style="color: var(--green-terminal); font-weight:bold; margin-bottom: 2px;">RELEASE NOTES - Milestone v2.0.0 Liverpool:</p>
-            <p style="color: #666; font-style: italic;">• No logs recorded yet for this release. Updates coming soon.</p>
-            <br>
+            <p style="color: var(--cyan-terminal); font-weight:bold; margin-bottom: 4px;">RELEASE NOTES - Milestone v2.0.0 Liverpool:</p>
+            <p style="color: #666; font-style: italic; margin-bottom: 12px;">(Changelog entry empty. Feature list pending update...)</p>
+            
             <p style="color: var(--green-terminal); font-weight:bold; margin-bottom: 2px;">RELEASE NOTES - Milestone v1.1.0 Kingston:</p>
-            <p style="color: #aaa;">• Better folder browsing: Looking through your local music folders and finding files is now way faster.<br>
+            <p style="color: #aaa; margin-bottom: 4px;">• Better folder browsing: Looking through your local music folders and finding files is now way faster.<br>
             • Streaming key fix: Fixed a glitch where music would stutter or drop out when pressing the streaming hotkey.</p>
           `;
           appendToHistory(command, updatesContent);
