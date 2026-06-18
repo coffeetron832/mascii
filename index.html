@@ -35,7 +35,6 @@
       position: relative;
     }
 
-    /* Clases añadidas para el nuevo logotipo ASCII a color */
     .red { color: #ff3333; }
     .blue { color: #3333ff; }
     .white { color: #ffffff; }
@@ -52,7 +51,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center; 
-      align-items: center;     
+      align-items: center;      
       font-size: 0.95rem;
       line-height: 1.6;
       overflow-y: auto;
@@ -318,7 +317,7 @@
       </div>
 
       <p class="landing-desc">mascii isn’t just a music player, it’s a philosophy. It transforms your terminal into a sleek, high-performance audio station that respects your workflow.</p>
-      
+       
       <div class="install-zone">
         <p class="install-title">Installation:</p>
         <div class="install-block">$ npm install -g mascii</div>
@@ -332,9 +331,9 @@
       </div>
 
       <hr class="terminal-hr">
-      
+       
       <div id="terminalHistory" class="terminal-history"></div>
-      
+       
       <div class="prompt-line">
         <span class="prompt-user">$</span>
         <input type="text" class="terminal-input" id="terminalInput" autofocus autocomplete="off" spellcheck="false">
@@ -442,12 +441,20 @@
 
         } else if (cleanCmd === 'updates') {
           const updatesContent = `
-            <p style="color: var(--green-terminal); font-weight:bold; margin-bottom: 2px;">RELEASE NOTES - Milestone v2.0.0 Liverpool:</p>
-            <p style="color: #666666; font-style: italic;">• No logs recorded yet for this release. Updates will be listed soon.</p>
-            <br>
-            <p style="color: var(--dim-text); font-weight:bold; margin-bottom: 2px;">Previous Releases - Milestone v1.1.0 Kingston:</p>
-            <p style="color: #aaa;">• Better folder browsing: Looking through your local music folders and finding files is now way faster.<br>
-            • Streaming key fix: Fixed a glitch where music would stutter or drop out when pressing the streaming hotkey.</p>
+            <p style="color: var(--green-terminal); font-weight:bold; margin-bottom: 6px;">RELEASE NOTES - Milestone v2.0.0 Liverpool:</p>
+            <div style="color: #ffffff; padding-left: 8px; font-size: 0.85rem; line-height: 1.4; margin-bottom: 12px;">
+              <p>• <span style="color: var(--yellow-terminal); font-weight: bold;">Perfect Digital Clock Geometry:</span> Replaced old, inconsistent character layouts with a strict, uniform 5-line-high matrix. This fixes text distortion and guarantees the timer always renders symmetrically.</p>
+              <p>• <span style="color: var(--yellow-terminal); font-weight: bold;">Flicker-Free "Now Playing" Layout:</span> Separated the track details from the progress bar into independent render blocks. This stops the text from constantly flashing or blinking every second when the progress bar updates.</p>
+              <p>• <span style="color: var(--yellow-terminal); font-weight: bold;">Column Alignment & Tabular Scaling:</span> The tracklist now dynamically measures the width of your screen to draw clean, neatly aligned text columns ("Track Name", "Album", "Duration"), scaling perfectly.</p>
+              <p>• <span style="color: var(--yellow-terminal); font-weight: bold;">Smart YouTube Fetcher & Background Downloader:</span> Runs a smooth, invisible background process to pull track metadata before playing a link. Includes an independent local downloading sequence connected to an interactive progress bar so users can monitor active saving without freezing the player.</p>
+              <p>• <span style="color: var(--yellow-terminal); font-weight: bold;">Independent Animation Launcher:</span> Configured a detached process pipeline to trigger the external companion app (./snake_anim). It checks a compatibility list of 8 different terminal hosts (Gnome, Konsole, XFCE, Kitty, Alacritty, etc.) to ensure it boots up safely regardless of the user's Linux setup.</p>
+              <p>• <span style="color: var(--yellow-terminal); font-weight: bold;">Smart Resize Buffer:</span> Overhauled the window resize event listener to completely redraw all active views immediately, preventing the ASCII interface layout from breaking or overlapping when stretching or shrinking the terminal window.</p>
+            </div>
+            <p style="color: var(--dim-text); font-weight:bold; margin-bottom: 4px;">Previous Releases - Milestone v1.1.0 Kingston:</p>
+            <div style="color: #aaa; padding-left: 8px; font-size: 0.82rem; line-height: 1.4;">
+              <p>• Better folder browsing: Looking through your local music folders and finding files is now way faster.</p>
+              <p>• Streaming key fix: Fixed a glitch where music would stutter or drop out when pressing the streaming hotkey.</p>
+            </div>
           `;
           appendToHistory(command, updatesContent);
           terminalInput.value = '';
